@@ -10,4 +10,9 @@
         <item name="android:inputType">number</item>
         <item name="android:maxLength">1</item>
     </style>
+
+    <style name="CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

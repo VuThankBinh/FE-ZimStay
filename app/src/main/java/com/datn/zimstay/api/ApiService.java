@@ -14,6 +14,7 @@ import com.datn.zimstay.api.models.RegisterResponse;
 import com.datn.zimstay.api.models.ResetPasswordRequest;
 import com.datn.zimstay.api.models.ResetPasswordResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
+import com.datn.zimstay.api.models.UserProfile;
 import com.datn.zimstay.api.models.VerifyOtpRequest;
 
 public interface ApiService {
@@ -37,4 +38,7 @@ public interface ApiService {
 
     @GET("auth/check-token-expiration")
     Call<TokenCheckResponse> checkTokenExpiration(@Header("Authorization") String token);
+
+    @GET("api/users/profile")
+    Call<UserProfile> getUserProfile();
 } 
