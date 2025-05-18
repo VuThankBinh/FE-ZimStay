@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "922566554943",
+    "project_id": "zimstay-b19f8",
+    "storage_bucket": "zimstay-b19f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922566554943:android:3edbfd391aeb032d8fcf8a",
+        "android_client_info": {
+          "package_name": "com.datn.zimstay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWg50zfWuvoA3c6Uw_8__rkB937ES4mns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
