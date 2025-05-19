@@ -1,9 +1,13 @@
 package com.datn.zimstay;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -16,29 +20,45 @@ import com.datn.zimstay.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NavController navController;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Ẩn ActionBar
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        // Get the NavHostFragment
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_activity_main);
+        bottomNavigationView = findViewById(R.id.navView);
+        // Thiết lập item được chọn là Practice
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
 
-        // Get the NavController from the NavHostFragment
-        navController = navHostFragment.getNavController();
-
-        // Setup the action bar to work with the NavController
-        NavigationUI.setupActionBarWithNavController(this, navController);
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        return navController.navigateUp() || super.onSupportNavigateUp();
+        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    return true;
+                } else if (itemId == R.id.nav_message) {
+                    Intent intent = new Intent(MainActivity.this, messageActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_notification) {
+                    Intent intent = new Intent(MainActivity.this, notificationActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    Intent intent = new Intent(MainActivity.this, profileActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

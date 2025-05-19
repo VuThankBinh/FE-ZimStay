@@ -8,10 +8,6 @@
         android:icon="@drawable/message_selector"
         android:title="Tin nhắn" />
     <item
-        android:id="@+id/nav_placeholder"
-        android:title=""
-        android:enabled="false" />
-    <item
         android:id="@+id/nav_notification"
         android:icon="@drawable/notification_selector"
         android:title="Thông báo" />

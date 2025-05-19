@@ -3,29 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/nav_home">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/nav_home"
         android:name="com.datn.zimstay.ui.home.HomeFragment"
         android:label="Trang chủ"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/nav_message"
         android:name="com.datn.zimstay.ui.dashboard.DashboardFragment"
-        android:label="Dashboard"
+        android:label="Tin nhắn"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/nav_notification"
         android:name="com.datn.zimstay.ui.notifications.NotificationsFragment"
         android:label="Thông báo"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/navigation_user"
-        android:name="com.datn.zimstay.ui.user.UserFragment"
+        android:id="@+id/nav_profile"
+        android:name="com.datn.zimstay.ui.user.UsersFragment"
         android:label="Cá nhân"
         tools:layout="@layout/fragment_user" />
 

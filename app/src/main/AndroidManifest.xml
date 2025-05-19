@@ -14,19 +14,25 @@
         android:theme="@style/Theme.ZimStay"
         tools:targetApi="31">
         <activity
+            android:name=".notificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".messageActivity"
+            android:exported="false" />
+        <activity
             android:name=".resetPassActivity"
             android:exported="false" />
         <activity
             android:name=".registerActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".profileActivity"
             android:exported="false" />
         <activity
             android:name=".xacnhanOTP"
             android:exported="false" />
         <activity
-            android:name=".loginActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
