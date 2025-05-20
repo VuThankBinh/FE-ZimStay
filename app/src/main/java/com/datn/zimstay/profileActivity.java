@@ -1,9 +1,12 @@
 package com.datn.zimstay;
 
-import android.app.AlertDialog;
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.MenuItem;
@@ -18,12 +21,16 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.datn.zimstay.api.ApiConfig;
 import com.datn.zimstay.api.ApiService;
 import com.datn.zimstay.api.RetrofitClient;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
@@ -42,6 +49,7 @@ import java.io.InputStream;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,7 +73,10 @@ public class profileActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
 
-    private AlertDialog currentDialog;
+    private static final int PERMISSION_REQUEST_CODE = 100;
+    private ActivityResultLauncher<String[]> requestPermissionLauncher;
+
+    private Runnable pendingAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +120,39 @@ public class profileActivity extends AppCompatActivity {
         setupImagePickers();
         getUser();
 
+        // Khởi tạo permission launcher
+        requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> {
+                boolean allGranted = true;
+                for (Boolean isGranted : permissions.values()) {
+                    if (!isGranted) {
+                        allGranted = false;
+                        break;
+                    }
+                }
+                if (allGranted) {
+                    // Nếu được cấp quyền, tiếp tục với hành động đã chọn
+                    if (pendingAction != null) {
+                        pendingAction.run();
+                        pendingAction = null;
+                    }
+                } else {
+                    // Nếu bị từ chối, hiển thị thông báo và hướng dẫn vào cài đặt
+                    new AlertDialog.Builder(this)
+                        .setTitle("Cần cấp quyền")
+                        .setMessage("Để sử dụng tính năng này, vui lòng cấp quyền trong Cài đặt")
+                        .setPositiveButton("Vào cài đặt", (dialog, which) -> {
+                            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            intent.setData(Uri.parse("package:" + getPackageName()));
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+                }
+            }
+        );
+
         // Xử lý sự kiện click vào avatar để thay đổi ảnh
         ivAvatar.setOnClickListener(v -> showImagePickerDialog());
 
@@ -139,7 +183,9 @@ public class profileActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     selectedImageUri = result.getData().getData();
-                    uploadImage(selectedImageUri);
+                    if (selectedImageUri != null) {
+                        uploadImage(selectedImageUri);
+                    }
                 }
             }
         );
@@ -149,86 +195,183 @@ public class profileActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    selectedImageUri = result.getData().getData();
-                    uploadImage(selectedImageUri);
+                    Bundle extras = result.getData().getExtras();
+                    if (extras != null && extras.containsKey("data")) {
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        // Lưu bitmap vào file tạm
+                        try {
+                            File tempFile = createTempFileFromBitmap(imageBitmap);
+                            selectedImageUri = Uri.fromFile(tempFile);
+                            uploadImage(selectedImageUri);
+                        } catch (IOException e) {
+                            Toast.makeText(this, "Lỗi khi xử lý ảnh", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
             }
         );
+    }
+
+    private File createTempFileFromBitmap(Bitmap bitmap) throws IOException {
+        File tempFile = File.createTempFile("avatar", ".jpg", getCacheDir());
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+        fos.close();
+        return tempFile;
+    }
+
+    private void checkAndRequestPermissions(Runnable action) {
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_MEDIA_IMAGES
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+        }
+
+        boolean allGranted = true;
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) 
+                != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+
+        if (allGranted) {
+            action.run();
+        } else {
+            // Kiểm tra xem có nên hiển thị giải thích không
+            boolean shouldShowRationale = false;
+            for (String permission : permissions) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                    shouldShowRationale = true;
+                    break;
+                }
+            }
+
+            if (shouldShowRationale) {
+                // Hiển thị dialog giải thích
+                new AlertDialog.Builder(this)
+                    .setTitle("Cần cấp quyền")
+                    .setMessage("Ứng dụng cần quyền truy cập camera và thư viện ảnh để thay đổi ảnh đại diện")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        pendingAction = action;
+                        requestPermissionLauncher.launch(permissions);
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+            } else {
+                // Xin quyền trực tiếp
+                pendingAction = action;
+                requestPermissionLauncher.launch(permissions);
+            }
+        }
     }
 
     private void showImagePickerDialog() {
         String[] options = {"Chọn từ thư viện", "Chụp ảnh mới"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Chọn ảnh đại diện");
-        
-        // Tạo layout cho dialog với chiều cao cố định
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_image_picker, null);
-        builder.setView(dialogView);
-
-        // Tìm các button trong layout
-        Button btnGallery = dialogView.findViewById(R.id.btnGallery);
-        Button btnCamera = dialogView.findViewById(R.id.btnCamera);
-
-        // Xử lý sự kiện click
-        btnGallery.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            imagePickerLauncher.launch(intent);
-            if (currentDialog != null) {
-                currentDialog.dismiss();
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                // Chọn từ thư viện
+                checkAndRequestPermissions(() -> {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    imagePickerLauncher.launch(intent);
+                });
+            } else {
+                // Chụp ảnh mới
+                checkAndRequestPermissions(() -> {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        cameraLauncher.launch(intent);
+                    } else {
+                        Toast.makeText(this, "Không tìm thấy ứng dụng camera", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-
-        btnCamera.setOnClickListener(v -> {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            cameraLauncher.launch(intent);
-            if (currentDialog != null) {
-                currentDialog.dismiss();
-            }
-        });
-
-        currentDialog = builder.create();
-        currentDialog.show();
+        builder.show();
     }
 
     private void uploadImage(Uri imageUri) {
         try {
+            // Hiển thị ảnh đã chọn ngay lập tức
+            Glide.with(this)
+                .load(imageUri)
+                .placeholder(R.drawable.user_1)
+                .error(R.drawable.user_2)
+                .circleCrop()
+                .into(ivAvatar);
+
             File imageFile = createTempFileFromUri(imageUri);
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
-            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
-Gson gson = new Gson();
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", "avatar_" + System.currentTimeMillis() + ".jpg", requestFile);
+
             RetrofitClient.getInstance()
                 .getApi()
                 .uploadImage(filePart)
-                .enqueue(new Callback<UploadResponse>() {
+                .enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Call<UploadResponse> call, Response<UploadResponse> response) {
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            String imageUrl = response.body().getUrl();
-                            updateProfileWithNewAvatar(imageUrl);
+                            try {
+                                String responseString = response.body().string();
+                                // Tách đường dẫn từ chuỗi trả về
+                                // Ví dụ: "File đã được lưu tại: D:\\...\\uploads\\images\\ic_warning.png"
+                                String[] parts = responseString.split("tại:");
+                                if (parts.length > 1) {
+                                    String fullPath = parts[1].trim();
+                                    String fileName = fullPath.substring(fullPath.lastIndexOf("\\") + 1);
+                                    
+                                    // Tạo URL đầy đủ cho ảnh
+                                    String imageUrl =   ApiConfig.Base_url +"uploads/images/" + fileName;
+                                    
+                                    // Load ảnh từ URL
+                                    Glide.with(profileActivity.this)
+                                        .load(imageUrl)
+                                        .placeholder(R.drawable.user_1)
+                                        .error(R.drawable.user_2)
+                                        .circleCrop()
+                                        .into(ivAvatar);
+
+                                    updateProfileWithNewAvatar(fileName);
+                                } else {
+                                    Toast.makeText(profileActivity.this, "Không tìm thấy đường dẫn file", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (IOException e) {
+                                Toast.makeText(profileActivity.this, "Lỗi khi đọc phản hồi từ server", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            System.out.println("res is fail: " + response.isSuccessful());
-                            System.out.println("res is fail: "+ requestFile.toString());
-                            System.out.println("res is fail: " + response.message());
-                            System.out.println("res is fail: " + gson.toJson(response.body()));
-                            System.out.println("res is fail: " + response.code());
-                            Toast.makeText(profileActivity.this, "Lỗi khi upload ảnh", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(profileActivity.this, "Upload ảnh thất bại", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<UploadResponse> call, Throwable t) {
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Toast.makeText(profileActivity.this, "Lỗi kết nối khi upload ảnh", Toast.LENGTH_SHORT).show();
                     }
                 });
         } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
             Toast.makeText(this, "Lỗi khi xử lý ảnh", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateProfileWithNewAvatar(String avatarUrl) {
+        System.out.println("lỗi: đã chạy ham r");
         SharedPreferences sharedPreferences = getSharedPreferences("ZimStayPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
-        
+
+        System.out.println("avatar: "+ avatarUrl);
         if (token == null) {
             Toast.makeText(this, "Lỗi xác thực", Toast.LENGTH_SHORT).show();
             return;
@@ -254,12 +397,19 @@ Gson gson = new Gson();
                         updateUser(response.body().getData());
                         Toast.makeText(profileActivity.this, "Cập nhật ảnh đại diện thành công", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(profileActivity.this, "Lỗi khi cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show();
+                        try {
+                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                            System.out.println("Update profile failed: " + errorBody);
+                            Toast.makeText(profileActivity.this, "Lỗi khi cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            Toast.makeText(profileActivity.this, "Lỗi khi cập nhật ảnh đại diện", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TokenCheckResponse> call, Throwable t) {
+                    System.out.println("Update profile failed: " + t.getMessage());
                     Toast.makeText(profileActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -439,12 +589,15 @@ Gson gson = new Gson();
         tvAge.setText(String.valueOf(tokenData.getAge()));
         tvIdCard.setText(tokenData.getIdCardNumber());
         tvViolations.setText(String.valueOf(tokenData.getNumOfViolations()));
+        
+        // Tạo URL đầy đủ cho ảnh
+        String imageUrl =  ApiConfig.Base_url+ "uploads/images/" + tokenData.getAvatar();
+        
         Glide.with(this)
-                .load(RetrofitClient.getInstance()
-                        .getApi().getImage() +"/"+tokenData.getAvatar()) // URL ảnh
-                .placeholder(R.drawable.user_1) // ảnh mặc định nếu chưa load
-                .error(R.drawable.user_2) // ảnh khi load lỗi
-                .circleCrop() // nếu muốn ảnh tròn
-                .into(ivAvatar);
+            .load(imageUrl)
+            .placeholder(R.drawable.user_1)
+            .error(R.drawable.user_2)
+            .circleCrop()
+            .into(ivAvatar);
     }
 }

@@ -1,18 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/home_selector"
-        android:title="Trang chủ" />
+        android:icon="@drawable/home_1"
+        android:title="Trang chủ"
+        android:contentDescription="Trang chủ"
+        android:theme="@style/BottomNavigationItemStyle" />
+
     <item
         android:id="@+id/nav_message"
-        android:icon="@drawable/message_selector"
-        android:title="Tin nhắn" />
+        android:icon="@drawable/message_1"
+        android:title="Tin nhắn"
+        android:contentDescription="Tin nhắn"
+        android:theme="@style/BottomNavigationItemStyle" />
+
     <item
         android:id="@+id/nav_notification"
-        android:icon="@drawable/notification_selector"
-        android:title="Thông báo" />
+        android:icon="@drawable/notifacation_1"
+        android:title="Thông báo"
+        android:contentDescription="Thông báo"
+        android:theme="@style/BottomNavigationItemStyle" />
+
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/user_selector"
-        android:title="Cá nhân" />
+        android:icon="@drawable/user_1"
+        android:title="Cá nhân"
+        android:contentDescription="Cá nhân"
+        android:theme="@style/BottomNavigationItemStyle" />
 </menu>

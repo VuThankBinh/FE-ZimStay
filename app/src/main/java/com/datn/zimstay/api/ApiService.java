@@ -1,5 +1,6 @@
 package com.datn.zimstay.api;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -10,6 +11,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 
+import com.datn.zimstay.api.models.ApartmentResponse;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
 import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
@@ -25,6 +27,7 @@ import com.datn.zimstay.api.models.VerifyOtpRequest;
 import com.datn.zimstay.api.models.UploadResponse;
 import com.datn.zimstay.api.models.UpdateProfileRequest;
 import okhttp3.MultipartBody;
+import retrofit2.http.Path;
 
 public interface ApiService {
     @POST("api/users/login")
@@ -52,18 +55,17 @@ public interface ApiService {
 
     @Multipart
     @POST("api/upload")
-    Call<UploadResponse> uploadImage(
-        @Part MultipartBody.Part file
-    );
+    Call<ResponseBody> uploadImage(@Part MultipartBody.Part file);
+
     @PUT("api/users/change-password")
-    Call<TokenCheckResponse> changePassword(
-            @Body ChangePasswordRequest request
-    );
+    Call<TokenCheckResponse> changePassword(@Body ChangePasswordRequest request);
+
     @PUT("api/users/profile")
-    Call<TokenCheckResponse> updateProfile(
-        @Header("Authorization") String token,
-        @Body UpdateProfileRequest request
-    );
-    @GET("uploads/images")
-    Call<String> getImage();
+    Call<TokenCheckResponse> updateProfile(@Header("Authorization") String token, @Body UpdateProfileRequest request);
+
+    @GET("uploads/images/{filename}")
+    String getImageUrl(@Path("filename") String filename);
+
+    @GET("/api/apartments/{id}")
+    Call<ApartmentResponse> getApartmentById(@Path("id") int id);
 } 

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/roomDetailLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F9F9F9"
+    tools:context=".roomDetailActivity">
+
+    <!-- Nội dung có thể cuộn -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/back"
+                android:src="@drawable/left_chevron">
+            </ImageView>
+            <!-- ViewPager2 để hiển thị nhiều ảnh -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Thông tin ngắn -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:text="Còn trống"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:text="12 Nguyễn Văn Linh, Hiến Nam, TP Hưng Yên"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvCost"
+                android:text="2.000.000đ/tháng"
+                android:textColor="#E91E63"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Tóm tắt tiện ích -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:weightSum="3">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView 
+                        android:text="Diện tích" 
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvArea"
+                        android:text="30m²"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Đặt cọc"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvDeposit"
+                        android:text="1.000.000đ"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Tỉnh/Thành phố"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvCity"
+                        android:text="Hưng Yên"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tiện ích (amenities) -->
+            <TextView
+                android:text="Tiện ích"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:id="@+id/layoutAmenities"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp" />
+
+            </HorizontalScrollView>
+
+            <!-- Thông tin chi tiết (cố định hoặc lấy từ API nếu có) -->
+            <TextView
+                android:text="Thông tin chi tiết"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvDetailInfo"
+                android:text="Đối diện khu chợ, khu dân cư, gần trường học, bến xe, khu ăn uống, quán game, rất thuận tiện.\nCó chỗ để xe, an ninh cực tốt.\nWifi, nước đầy đủ, điều hòa, nóng lạnh.\n\n➡️ Vui lòng liên hệ để được hỗ trợ nhanh nhất."
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 3 Nút cố định -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:padding="8dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp">
+
+        <Button
+            android:id="@+id/btnReport"
+            android:text="Báo cáo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#F44336" />
+
+        <Button
+            android:id="@+id/btnChat"
+            android:text="Chat"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF9800" />
+
+        <Button
+            android:id="@+id/btnBook"
+            android:text="Đặt lịch xem phòng"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_marginStart="8dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#4CAF50" />
+    </LinearLayout>
+</LinearLayout>
