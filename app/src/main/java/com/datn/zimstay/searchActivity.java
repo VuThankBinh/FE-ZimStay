@@ -2,20 +2,36 @@ package com.datn.zimstay;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.datn.zimstay.api.RetrofitClient;
+import com.datn.zimstay.api.models.ApartmentResponse;
+import com.datn.zimstay.api.models.ApartmentsResponse;
 import com.datn.zimstay.api.models.GetTinhResponse;
+import com.datn.zimstay.adapter.ApartmentAdapter;
+import com.datn.zimstay.model.Apartment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +41,34 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class searchActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigationView;
 
-    private List<String> districtList = new ArrayList<>();
-    Spinner spinnerCity, spinnerDistrict;
+    private BottomNavigationView bottomNavigationView;
+    private Spinner spinnerCity, spinnerDistrict;
 
     private List<String> cityNameList = new ArrayList<>();
     private List<String> cityIdList = new ArrayList<>();
+    private List<String> districtList = new ArrayList<>();
+
+    // Checkbox
+    CheckBox checkboxPet, checkboxAC, checkboxLaundry, checkboxChoDeXe, checkboxNhaTam, checkboxElectricBike;
+
+    private RecyclerView recyclerView2;
+    private ApartmentAdapter apartmentAdapter;
+    private List<Apartment> apartmentList = new ArrayList<>();
+    private Integer minPrice = null;
+    private Integer maxPrice = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        // Ẩn ActionBar
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        AnhXa(); // Ánh xạ các checkbox
+
         bottomNavigationView = findViewById(R.id.navView);
         bottomNavigationView.setSelectedItemId(R.id.nav_search);
 
@@ -57,7 +85,6 @@ public class searchActivity extends AppCompatActivity {
                     finish();
                     return true;
                 } else if (itemId == R.id.nav_search) {
-                    // Nếu đang ở đây rồi thì không làm gì
                     return true;
                 } else if (itemId == R.id.nav_notification) {
                     startActivity(new Intent(searchActivity.this, notificationActivity.class));
@@ -84,9 +111,8 @@ public class searchActivity extends AppCompatActivity {
                 System.out.println("city id: " + selectedCityId);
 
                 if (!selectedCityId.equals("-1")) {
-                    fetchDistricts(selectedCityId); // Truyền đúng ID thành phố đã format vào API
+                    fetchDistricts(selectedCityId);
                 } else {
-                    // Nếu là "Chọn thành phố" thì xóa districtList, thêm mặc định
                     districtList.clear();
                     districtList.add("Chọn quận/huyện");
                     ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(searchActivity.this,
@@ -98,32 +124,115 @@ public class searchActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Không làm gì
             }
         });
 
-        // Nếu bạn có nút tìm kiếm, ví dụ buttonSearch, xử lý kiểm tra dưới đây
+        recyclerView2 = findViewById(R.id.recyclerView2);
+        recyclerView2.setLayoutManager(new LinearLayoutManager(this));
+        apartmentAdapter = new ApartmentAdapter(this, apartmentList, new ApartmentAdapter.OnApartmentClickListener() {
+            @Override
+            public void onApartmentClick(int apartmentId) {
+                Intent intent = new Intent(searchActivity.this, roomDetailActivity.class);
+                intent.putExtra("apartment_id", apartmentId);
+                startActivity(intent);
+            }
+        });
+        recyclerView2.setAdapter(apartmentAdapter);
+
         findViewById(R.id.buttonSearch).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validateSelection()) {
-                    // Tiến hành tìm kiếm
-                    Toast.makeText(searchActivity.this, "Tìm kiếm thành công!", Toast.LENGTH_SHORT).show();
+                    // Lấy giá trị từ Spinner
+                    String city = spinnerCity.getSelectedItem().toString();
+                    String district = spinnerDistrict.getSelectedItem().toString();
+
+                    // Làm sạch giá trị nếu là mặc định
+                    if (city.equals("Chọn thành phố")) city = "";
+                    if (district.equals("Chọn quận/huyện")) district = "";
+
+                    // Xử lý chuỗi cắt bỏ tiền tố không cần thiết
+                    city = city.replace("Thành phố", "")
+                            .replace("Tỉnh", "")
+                            .trim();
+
+                    district = district.replace("Thành phố", "")
+                            .replace("Quận", "")
+                            .replace("Huyện", "")
+                            .trim();
+
+                    // Lấy tiện ích đã chọn
+                    List<Integer> amenityIds = new ArrayList<>();
+                    if (checkboxPet.isChecked()) amenityIds.add(7);
+                    if (checkboxAC.isChecked()) amenityIds.add(8);
+                    if (checkboxLaundry.isChecked()) amenityIds.add(9);
+                    if (checkboxChoDeXe.isChecked()) amenityIds.add(10);
+                    if (checkboxNhaTam.isChecked()) amenityIds.add(11);
+                    if (checkboxElectricBike.isChecked()) amenityIds.add(12);
+
+                    // Lấy khoảng giá từ RadioGroup
+                    RadioGroup radioGroup = findViewById(R.id.priceRadioGroup);
+                    int selectedId = radioGroup.getCheckedRadioButtonId();
+                    if (selectedId == R.id.price_0_1) {
+                        minPrice = 0;
+                        maxPrice = 1000000;
+                    } else if (selectedId == R.id.price_1_2) {
+                        minPrice = 1000000;
+                        maxPrice = 2000000;
+                    } else if (selectedId == R.id.price_2_3) {
+                        minPrice = 2000000;
+                        maxPrice = 3000000;
+                    } else if (selectedId == R.id.price_3_4) {
+                        minPrice = 3000000;
+                        maxPrice = 4000000;
+                    } else if (selectedId == R.id.price_4_5) {
+                        minPrice = 4000000;
+                        maxPrice = 5000000;
+                    } else if (selectedId == R.id.price_above_5) {
+                        minPrice = 5000000;
+                        maxPrice = 6000000;
+                    }
+
+                    System.out.println("minPrice: " + minPrice + ", maxPrice: " + maxPrice);
+
+                    // Tạo JSON body để gọi API
+                    JsonObject body = new JsonObject();
+                    if (minPrice != null) body.addProperty("minPrice", minPrice);
+                    if (maxPrice != null) body.addProperty("maxPrice", maxPrice);
+                    if (!city.isEmpty()) body.addProperty("city", city);
+                    body.add("district", JsonNull.INSTANCE);
+//                    if (!district.isEmpty()) body.addProperty("district", district);
+
+                    JsonArray amenitiesArray = new JsonArray();
+                    for (int id : amenityIds) {
+                        amenitiesArray.add(id);
+                    }
+                    body.add("amenityIds", amenitiesArray);
+
+                    System.out.println("body: " + body); // debug log
+
+                    // Gọi API tìm kiếm
+                    searchApartments(body);
                 }
             }
         });
+
+    }
+
+    private void AnhXa() {
+        checkboxPet = findViewById(R.id.checkboxPet);
+        checkboxAC = findViewById(R.id.checkboxAC);
+        checkboxLaundry = findViewById(R.id.checkboxLaundry);
+        checkboxChoDeXe = findViewById(R.id.checkboxChoDeXe);
+        checkboxNhaTam = findViewById(R.id.checkboxNhaTam);
+        checkboxElectricBike = findViewById(R.id.checkboxElectricBike);
     }
 
     private boolean validateSelection() {
         int cityPos = spinnerCity.getSelectedItemPosition();
-        int districtPos = spinnerDistrict.getSelectedItemPosition();
 
         if (cityPos == 0) {
             Toast.makeText(this, "Vui lòng chọn thành phố", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (districtPos == 0) {
-            Toast.makeText(this, "Vui lòng chọn quận/huyện", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -139,13 +248,11 @@ public class searchActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             cityNameList.clear();
                             cityIdList.clear();
-
                             cityNameList.add("Chọn thành phố");
                             cityIdList.add("-1");
 
                             for (GetTinhResponse tinh : response.body()) {
                                 cityNameList.add(tinh.getName());
-                                // Format id thành "01", "02", ..., "10", "11", ...
                                 cityIdList.add(String.format("%02d", tinh.getId()));
                             }
 
@@ -154,7 +261,6 @@ public class searchActivity extends AppCompatActivity {
                             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             spinnerCity.setAdapter(adapter);
 
-                            // Thiết lập spinnerDistrict mặc định
                             districtList.clear();
                             districtList.add("Chọn quận/huyện");
                             ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(searchActivity.this,
@@ -196,4 +302,52 @@ public class searchActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void searchApartments(JsonObject body) {
+        RetrofitClient
+                .getInstance()
+                .getApi()
+                .searchApartments(body)
+                .enqueue(new Callback<ApartmentsResponse>() {
+                    @Override
+                    public void onResponse(Call<ApartmentsResponse> call, Response<ApartmentsResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                ApartmentsResponse apartmentsResponse = response.body();
+                                List<Apartment> apartments = apartmentsResponse.getData();
+
+                                // In ra thông tin căn hộ bằng System.out.println
+                                for (Apartment apartment : apartments) {
+                                    System.out.println("ID: " + apartment.getId());
+                                    System.out.println("Address: " + apartment.getAddress());
+                                    System.out.println("City: " + apartment.getCity());
+                                    System.out.println("District: " + apartment.getDistrict());
+                                    System.out.println("Ward: " + apartment.getWard());
+                                    System.out.println("Cost: " + apartment.getCost());
+                                    System.out.println("Status: " + apartment.getStatus());
+                                    System.out.println("Area: " + apartment.getArea());
+                                    System.out.println("Deposit: " + apartment.getHouseDeposit());
+                                    System.out.println("-----------");
+                                }
+
+                                apartmentList.clear();
+                                apartmentList.addAll(apartments);
+                                apartmentAdapter.notifyDataSetChanged();
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.out.println("Response failed or body is null");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApartmentsResponse> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+    }
+
+
 }

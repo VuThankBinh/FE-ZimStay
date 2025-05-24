@@ -11,7 +11,9 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 
 import com.datn.zimstay.api.models.ApartmentResponse;
+import com.datn.zimstay.api.models.ApartmentsResponse;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
+import com.datn.zimstay.api.models.ConversationResponse;
 import com.datn.zimstay.api.models.GetTinhResponse;
 import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
@@ -24,11 +26,13 @@ import com.datn.zimstay.api.models.ResetPasswordResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
 import com.datn.zimstay.api.models.VerifyOtpRequest;
 import com.datn.zimstay.api.models.UpdateProfileRequest;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
 import okhttp3.MultipartBody;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("api/users/login")
@@ -49,7 +53,7 @@ public interface ApiService {
     @POST("api/otp/sendOTPreset")
     Call<OtpResponse> sendOTPreset(@Body OtpRequest otpRequest);
 
-    @GET("auth/check-token-expiration")
+    @GET("api/users/me")
     Call<TokenCheckResponse> checkTokenExpiration(@Header("Authorization") String token);
     @GET("api/users/check-token")
     Call<TokenCheckResponse> getUser(@Header("Authorization") String token);
@@ -78,4 +82,26 @@ public interface ApiService {
 
     @GET("/api/dia-chi/tinh/{idTinh}/huyen/{idHuyen}/xa")
     Call<ArrayList<GetTinhResponse>> getXa(@Path("idTinh") int idTinh, @Path("idHuyen") int idHuyen);
-} 
+
+    @POST("api/apartments/search")
+    Call<ApartmentsResponse>searchApartments(@Body JsonObject body);
+
+    @POST("/api/conversations")
+    Call<ConversationResponse> createConversation(
+            @Query("user1Id") int user1Id,
+            @Query("user2Id") int user2Id,
+            @Query("apartmentIds") int apartmentId
+    );
+    @GET("/api/conversations/{conversationId}")
+    Call<ConversationResponse> getConversation(@Path("conversationId") int conversationId);
+
+    @GET("/api/conversations/{id}")
+    Call<ConversationResponse> getConversationById(@Path("id") int id);
+
+    @GET("/api/conversations/user/{userId}")
+    Call<ArrayList<ConversationResponse>> getConversationsByUserId(@Path("userId") int userId);
+
+    @GET("/api/conversations/between?user1Id={user1Id}&user2Id={user2Id}")
+    Call<ConversationResponse> getConversationBetweenUsers(@Path("user1Id") int user1Id, @Path("user2Id") int user2Id);
+
+}

@@ -1,6 +1,7 @@
 package com.datn.zimstay;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.datn.zimstay.api.RetrofitClient;
 import com.datn.zimstay.api.models.Amenity;
 import com.datn.zimstay.api.models.ApartmentData;
 import com.datn.zimstay.api.models.ApartmentResponse;
+import com.datn.zimstay.api.models.ConversationResponse;
 import com.datn.zimstay.api.models.ImageItem;
 import com.datn.zimstay.adapter.ImageSliderAdapter;
 import com.google.gson.Gson;
@@ -33,11 +35,20 @@ public class roomDetailActivity extends AppCompatActivity {
 
     Integer id=9;
     Integer ownerId=0;
+    private static final String TAG = "loginActivity";
+    private static final String PREF_NAME = "ZimStayPrefs";
+    private static final String KEY_TOKEN = "token";
+    private static final String KEY_TOKEN_TYPE = "token_type";
+    private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_USER_AVATAR = "user_avatar";
+    private static final String KEY_ACCOUNT_TYPE = "account_type";
+    private Integer userId;
 
     private ViewPager2 viewPager;
     private TextView tvStatus, tvAddress, tvCost, tvArea, tvDeposit, tvCity, tvDetailInfo;
     private LinearLayout layoutAmenities;
     private ImageView back;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +58,8 @@ public class roomDetailActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        userId=sharedPreferences.getInt("nguoi_dung_id",0);
         initializeViews();
         Intent intent = getIntent();
         id = intent.getIntExtra("apartment_id", -1);
@@ -57,8 +70,44 @@ public class roomDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Button btnChat= findViewById(R.id.btnChat);
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createConversation();
+            }
+        });
 
     }
+    private void createConversation() {
+        System.out.println("id: " + id);
+        System.out.println("userId: " + userId);
+        System.out.println("ownerId: " + ownerId);
+
+        RetrofitClient
+                .getInstance()
+                .getApi()
+                .createConversation(userId, ownerId, id)
+                .enqueue(new Callback<ConversationResponse>() {
+                    @Override
+                    public void onResponse(Call<ConversationResponse> call, Response<ConversationResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Intent intent = new Intent(roomDetailActivity.this, ChatActivity.class);
+                            intent.putExtra("apartment_id", id);
+                            intent.putExtra("ownerId", ownerId);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(roomDetailActivity.this, "Lỗi khi tạo cuộc hội thoại", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ConversationResponse> call, Throwable t) {
+                        Toast.makeText(roomDetailActivity.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void initializeViews() {
         viewPager = findViewById(R.id.viewPager);
         tvStatus = findViewById(R.id.tvStatus);

@@ -119,7 +119,16 @@ public class profileActivity extends AppCompatActivity {
         initializeViews();
         setupImagePickers();
         getUser();
-
+        Button logout=findViewById(R.id.btnLogOut);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearUser();
+                Intent intent =new Intent(profileActivity.this, loginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         // Khởi tạo permission launcher
         requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),

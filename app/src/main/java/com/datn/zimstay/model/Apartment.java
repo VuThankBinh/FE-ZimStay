@@ -12,8 +12,8 @@ public class Apartment {
     private String ward;
     private int cost;
     private String status;
-    private int area;
-    private int houseDeposit;
+    private double area;
+    private double houseDeposit;
     private List<Image> images;
     private List<Amenity> amenities;
 
@@ -79,7 +79,7 @@ public class Apartment {
         this.status = status;
     }
 
-    public int getArea() {
+    public double getArea() {
         return area;
     }
 
@@ -87,7 +87,7 @@ public class Apartment {
         this.area = area;
     }
 
-    public int getHouseDeposit() {
+    public double getHouseDeposit() {
         return houseDeposit;
     }
 

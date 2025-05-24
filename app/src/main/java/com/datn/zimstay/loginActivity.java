@@ -17,6 +17,7 @@ import com.datn.zimstay.api.models.LoginResponse;
 import com.datn.zimstay.api.models.OtpRequest;
 import com.datn.zimstay.api.models.OtpResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -152,12 +153,9 @@ public class loginActivity extends AppCompatActivity {
                             if (loginResponse.isSuccess()) {
                                 // Lưu thông tin người dùng
                                 saveUserData(loginResponse);
-                                
-                                Toast.makeText(loginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                checkTokenExpiration();
 
-                                 Intent intent = new Intent(loginActivity.this, MainActivity.class);
-                                 startActivity(intent);
-                                 finish();
+
                             } else {
                                 Toast.makeText(loginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -200,7 +198,11 @@ public class loginActivity extends AppCompatActivity {
                         public void onResponse(Call<TokenCheckResponse> call, Response<TokenCheckResponse> response) {
                             if (response.isSuccessful() && response.body() != null) {
                                 TokenCheckResponse tokenCheckResponse = response.body();
-                                Log.d(TAG, "Token check response: " + tokenCheckResponse.getMessage());
+                                Gson gson = new Gson();
+                                System.out.println("tokenCheckResponse: "+ gson.toJson(tokenCheckResponse));
+                                SharedPreferences.Editor editor= sharedPreferences.edit();
+                                editor.putInt("nguoi_dung_id", tokenCheckResponse.getData().getIdUser()).apply();
+                                System.out.println("nguoi_dung_id: "+sharedPreferences.getInt("nguoi_dung_id",0));
                                 Toast.makeText(loginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(loginActivity.this, MainActivity.class);
                                 startActivity(intent);

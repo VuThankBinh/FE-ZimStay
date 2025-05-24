@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         rvCheapest.setAdapter(apartmentAdapter);
         anHien.setOnClickListener(View ->{
             if(anHien.getText().equals("Ẩn đi")){
-                anHien.setText("Hiện đi");
+                anHien.setText("Hiện ra");
                 rvCheapest.setVisibility(View.GONE);
 
             }else{

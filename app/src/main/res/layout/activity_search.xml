@@ -4,29 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    tools:context=".searchActivity">
 
-    <!-- Nội dung cuộn -->
-    <ScrollView
-        android:id="@+id/scrollContent"
+    <!-- Scroll nội dung chính -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/navView"
-        android:padding="16dp"
-        android:background="#f5f5f5">
+        android:fillViewport="true">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/scrollContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#f5f5f5">
+
+            <!-- Nút quay lại -->
             <ImageView
+                android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/back"
-                android:src="@drawable/ic_back">
-            </ImageView>
+                android:src="@drawable/ic_back" />
 
-            <!-- Giá -->
+            <!-- Khoảng giá -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,68 +45,28 @@
                 android:orientation="vertical"
                 android:layout_marginTop="8dp">
 
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="2">
-
-                    <RadioButton
-                        android:id="@+id/price_0_1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="Dưới 1 triệu"
-                        android:buttonTint="#4CAF50" />
-
-                    <RadioButton
-                        android:id="@+id/price_1_2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="1 - 2 triệu"
-                        android:buttonTint="#4CAF50" />
-
-                    <RadioButton
-                        android:id="@+id/price_2_3"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="2 - 3 triệu"
-                        android:buttonTint="#4CAF50" />
-
-                    <RadioButton
-                        android:id="@+id/price_3_4"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="3 - 4 triệu"
-                        android:buttonTint="#4CAF50" />
-
-                    <RadioButton
-                        android:id="@+id/price_4_5"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="4 - 5 triệu"
-                        android:buttonTint="#4CAF50" />
-
-                    <RadioButton
-                        android:id="@+id/price_above_5"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        android:text="Trên 5 triệu"
-                        android:buttonTint="#4CAF50" />
-                </GridLayout>
+                <!-- Các tùy chọn giá -->
+                <RadioButton android:id="@+id/price_0_1" android:text="Dưới 1 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
+                <RadioButton android:id="@+id/price_1_2" android:text="1 - 2 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
+                <RadioButton android:id="@+id/price_2_3" android:text="2 - 3 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
+                <RadioButton android:id="@+id/price_3_4" android:text="3 - 4 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
+                <RadioButton android:id="@+id/price_4_5" android:text="4 - 5 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
+                <RadioButton android:id="@+id/price_above_5" android:text="Trên 5 triệu"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:buttonTint="#4CAF50" />
             </RadioGroup>
 
-            <!-- Vị trí -->
+            <!-- Địa chỉ -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -117,18 +80,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="4dp"
-                android:spinnerMode="dropdown"
                 android:background="@drawable/botron_img"
-                android:prompt="@string/select_city" />
+                android:spinnerMode="dropdown" />
 
             <Spinner
                 android:id="@+id/spinnerDistrict"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:background="@drawable/botron_img"
                 android:layout_marginTop="8dp"
-                android:spinnerMode="dropdown"
-                android:prompt="@string/select_district" />
+                android:background="@drawable/botron_img"
+                android:spinnerMode="dropdown" />
 
             <!-- Tiện ích -->
             <TextView
@@ -144,58 +105,29 @@
                 android:layout_height="wrap_content"
                 android:columnCount="2">
 
-                <CheckBox
-                    android:id="@+id/checkboxPet"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Nuôi thú cưng"
+                <CheckBox android:id="@+id/checkboxPet" android:text="Nuôi thú cưng"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
-
-                <CheckBox
-                    android:id="@+id/checkboxAC"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Máy lạnh"
+                <CheckBox android:id="@+id/checkboxAC" android:text="Máy lạnh"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
-
-                <CheckBox
-                    android:id="@+id/checkboxLaundry"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Máy giặt"
+                <CheckBox android:id="@+id/checkboxLaundry" android:text="Máy giặt"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
-
-                <CheckBox
-                    android:id="@+id/checkboxChoDeXe"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Chỗ để xe"
+                <CheckBox android:id="@+id/checkboxChoDeXe" android:text="Chỗ để xe"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
-
-                <CheckBox
-                    android:id="@+id/checkboxNhaTam"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Nhà tắm riêng"
+                <CheckBox android:id="@+id/checkboxNhaTam" android:text="Nhà tắm riêng"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
-
-                <CheckBox
-                    android:id="@+id/checkboxElectricBike"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="4dp"
-                    android:text="Hỗ trợ xe điện"
+                <CheckBox android:id="@+id/checkboxElectricBike" android:text="Hỗ trợ xe điện"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="4dp"
                     android:buttonTint="#4CAF50" />
             </GridLayout>
 
@@ -208,10 +140,17 @@
                 android:backgroundTint="#4CAF50"
                 android:text="Tìm kiếm"
                 android:textColor="@android:color/white" />
-        </LinearLayout>
-    </ScrollView>
 
-    <!-- Bottom navigation -->
+            <!-- RecyclerView hiển thị kết quả -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Thanh điều hướng ở dưới cùng -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navView"
         android:layout_width="match_parent"

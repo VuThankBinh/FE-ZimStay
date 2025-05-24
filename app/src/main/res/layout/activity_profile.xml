@@ -347,6 +347,14 @@
                     android:backgroundTint="#4CAF50"
                     android:text="Chỉnh sửa thông tin"
                     android:textColor="@android:color/white" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="#F44336"
+                    android:text="Đăng xuất"
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
         </LinearLayout>
