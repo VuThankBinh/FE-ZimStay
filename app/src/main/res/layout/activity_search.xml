@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
+
+    <!-- Nội dung cuộn -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/navView"
+        android:padding="16dp"
+        android:background="#f5f5f5">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/back"
+                android:src="@drawable/ic_back">
+            </ImageView>
+
+            <!-- Giá -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khoảng giá (triệu VNĐ)"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+
+            <RadioGroup
+                android:id="@+id/priceRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2">
+
+                    <RadioButton
+                        android:id="@+id/price_0_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="Dưới 1 triệu"
+                        android:buttonTint="#4CAF50" />
+
+                    <RadioButton
+                        android:id="@+id/price_1_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="1 - 2 triệu"
+                        android:buttonTint="#4CAF50" />
+
+                    <RadioButton
+                        android:id="@+id/price_2_3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="2 - 3 triệu"
+                        android:buttonTint="#4CAF50" />
+
+                    <RadioButton
+                        android:id="@+id/price_3_4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="3 - 4 triệu"
+                        android:buttonTint="#4CAF50" />
+
+                    <RadioButton
+                        android:id="@+id/price_4_5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="4 - 5 triệu"
+                        android:buttonTint="#4CAF50" />
+
+                    <RadioButton
+                        android:id="@+id/price_above_5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        android:text="Trên 5 triệu"
+                        android:buttonTint="#4CAF50" />
+                </GridLayout>
+            </RadioGroup>
+
+            <!-- Vị trí -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCity"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="4dp"
+                android:spinnerMode="dropdown"
+                android:background="@drawable/botron_img"
+                android:prompt="@string/select_city" />
+
+            <Spinner
+                android:id="@+id/spinnerDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/botron_img"
+                android:layout_marginTop="8dp"
+                android:spinnerMode="dropdown"
+                android:prompt="@string/select_district" />
+
+            <!-- Tiện ích -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiện ích"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2">
+
+                <CheckBox
+                    android:id="@+id/checkboxPet"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Nuôi thú cưng"
+                    android:buttonTint="#4CAF50" />
+
+                <CheckBox
+                    android:id="@+id/checkboxAC"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Máy lạnh"
+                    android:buttonTint="#4CAF50" />
+
+                <CheckBox
+                    android:id="@+id/checkboxLaundry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Máy giặt"
+                    android:buttonTint="#4CAF50" />
+
+                <CheckBox
+                    android:id="@+id/checkboxChoDeXe"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Chỗ để xe"
+                    android:buttonTint="#4CAF50" />
+
+                <CheckBox
+                    android:id="@+id/checkboxNhaTam"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Nhà tắm riêng"
+                    android:buttonTint="#4CAF50" />
+
+                <CheckBox
+                    android:id="@+id/checkboxElectricBike"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:text="Hỗ trợ xe điện"
+                    android:buttonTint="#4CAF50" />
+            </GridLayout>
+
+            <!-- Nút tìm kiếm -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#4CAF50"
+                android:text="Tìm kiếm"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom_nav_shape"
+        android:elevation="10dp"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        android:theme="@style/BottomNavigationStyle" />
+</RelativeLayout>

@@ -9,10 +9,10 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 
 import com.datn.zimstay.api.models.ApartmentResponse;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
+import com.datn.zimstay.api.models.GetTinhResponse;
 import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
 import com.datn.zimstay.api.models.OtpRequest;
@@ -22,10 +22,11 @@ import com.datn.zimstay.api.models.RegisterResponse;
 import com.datn.zimstay.api.models.ResetPasswordRequest;
 import com.datn.zimstay.api.models.ResetPasswordResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
-import com.datn.zimstay.api.models.UserProfile;
 import com.datn.zimstay.api.models.VerifyOtpRequest;
-import com.datn.zimstay.api.models.UploadResponse;
 import com.datn.zimstay.api.models.UpdateProfileRequest;
+
+import java.util.ArrayList;
+
 import okhttp3.MultipartBody;
 import retrofit2.http.Path;
 
@@ -68,4 +69,13 @@ public interface ApiService {
 
     @GET("/api/apartments/{id}")
     Call<ApartmentResponse> getApartmentById(@Path("id") int id);
+
+    @GET("api/dia-chi/tinh")
+    Call<ArrayList<GetTinhResponse>> getTinh();
+
+    @GET("api/dia-chi/tinh/{id_tinh}/huyen")
+    Call<ArrayList<GetTinhResponse>> getQuanHuyen(@Path("id_tinh") String id);
+
+    @GET("/api/dia-chi/tinh/{idTinh}/huyen/{idHuyen}/xa")
+    Call<ArrayList<GetTinhResponse>> getXa(@Path("idTinh") int idTinh, @Path("idHuyen") int idHuyen);
 } 

@@ -13,7 +13,12 @@
         android:title="Tin nhắn"
         android:contentDescription="Tin nhắn"
         android:theme="@style/BottomNavigationItemStyle" />
-
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/baseline_search_24"
+        android:title="Tìm kiếm"
+        android:contentDescription="Tìm kiếm"
+        android:theme="@style/BottomNavigationItemStyle" />
     <item
         android:id="@+id/nav_notification"
         android:icon="@drawable/notifacation_1"

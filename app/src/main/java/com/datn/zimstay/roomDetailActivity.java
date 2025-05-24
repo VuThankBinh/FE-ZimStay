@@ -49,7 +49,7 @@ public class roomDetailActivity extends AppCompatActivity {
         }
         initializeViews();
         Intent intent = getIntent();
-        id = intent.getIntExtra("id", 9);
+        id = intent.getIntExtra("apartment_id", -1);
         fetchRoomDetail();
         back.setOnClickListener(new View.OnClickListener() {
             @Override

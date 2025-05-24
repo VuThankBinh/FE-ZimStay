@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="4dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/botron_img">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:orientation="horizontal">
+
+        <!-- Ảnh căn hộ -->
+        <ImageView
+            android:id="@+id/imgApartment"
+            android:layout_width="120dp"
+            android:layout_height="90dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Apartment Image"
+            android:src="@drawable/img_trangchu1" />
+
+        <!-- Thông tin chi tiết -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/tvApartmentTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Căn hộ cao cấp Riverside"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000" />
+
+            <TextView
+                android:id="@+id/tvApartmentAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123 Đường ABC, Quận 1, TP.HCM"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvApartmentPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 triệu VNĐ/tháng"
+                android:textSize="14sp"
+                android:textColor="#009688"
+                android:layout_marginTop="6dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
