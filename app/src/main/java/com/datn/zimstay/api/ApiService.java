@@ -17,6 +17,8 @@ import com.datn.zimstay.api.models.ConversationResponse;
 import com.datn.zimstay.api.models.GetTinhResponse;
 import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
+import com.datn.zimstay.api.models.MessageRequest;
+import com.datn.zimstay.api.models.MessageResponse;
 import com.datn.zimstay.api.models.OtpRequest;
 import com.datn.zimstay.api.models.OtpResponse;
 import com.datn.zimstay.api.models.RegisterRequest;
@@ -29,6 +31,7 @@ import com.datn.zimstay.api.models.UpdateProfileRequest;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.http.Path;
@@ -104,4 +107,13 @@ public interface ApiService {
     @GET("/api/conversations/between?user1Id={user1Id}&user2Id={user2Id}")
     Call<ConversationResponse> getConversationBetweenUsers(@Path("user1Id") int user1Id, @Path("user2Id") int user2Id);
 
+    @GET("/api/users/{id}")
+    Call<TokenCheckResponse> getUserById(@Path("id") int id);
+
+    @GET("/api/messages/conversation/{conversationId}")
+    Call<List<MessageResponse>> getMessagesByConversationId(
+            @Path("conversationId") int conversationId,
+            @Query("userId") int userId);
+    @POST("api/messages")
+    Call<MessageResponse> sendMessage(@Body MessageRequest messageRequest);
 }

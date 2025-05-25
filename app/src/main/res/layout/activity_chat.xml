@@ -1,7 +1,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!-- Thanh top: Quay lại + Avatar + Tên người dùng -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:background="#B5DEB6">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Quay lại"
+            android:layout_marginEnd="12dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:cardPreventCornerOverlap="false">
+
+            <ImageView
+                android:id="@+id/img_user_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user_1" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/text_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên người dùng"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+
+    <!-- Danh sách các phòng chat -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_rooms"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="8dp"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:scrollbars="none"/>
 
     <!-- Danh sách tin nhắn -->
     <androidx.recyclerview.widget.RecyclerView
@@ -9,7 +64,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:overScrollMode="never" />
 
     <!-- Thanh nhập tin nhắn -->
     <LinearLayout
@@ -24,12 +80,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Nhập tin nhắn"
-            android:background="@drawable/edittext_background" />
+            android:background="@drawable/edittext_background"
+            android:padding="10dp" />
 
         <ImageButton
             android:id="@+id/btn_send"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/telegram"
             android:background="@android:color/transparent"
             android:contentDescription="Gửi"/>
