@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/botron_img"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".DatLichActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đặt lịch xem phòng"
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:layout_margin="10dp"
+        android:textStyle="bold"
+        android:textSize="20dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="vertical">
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:id="@+id/user1"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/user_1">
+                    </ImageView>
+                </androidx.cardview.widget.CardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Khách thuê"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Vũ Thanh Bình"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:id="@+id/name1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0987654321"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:id="@+id/phone1"/>
+            </LinearLayout>
+            <View
+                android:layout_width="80dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#FF9800" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="50dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:id="@+id/user2"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/nnth7mu"/>
+                </androidx.cardview.widget.CardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Chủ nhà"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Nguyễn Hoàng Nam"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:id="@+id/name2"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0987654321"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:id="@+id/phone2"/>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#A6A6A6" />
+        <!-- Thời gian xem phòng -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:text="Thời gian xem phòng"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <!-- Ngày -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/botron_img"
+            android:orientation="horizontal"
+            android:id="@+id/datePickerLayout">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_calendar"
+                android:tint="#FF9800" />
+
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Chọn ngày"
+                android:textColor="#676767"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Giờ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/botron_img"
+            android:orientation="horizontal"
+            android:id="@+id/timePickerLayout">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/stopwatch"
+                android:tint="#FF9800" />
+
+            <TextView
+                android:id="@+id/textViewTime"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:text="Chọn giờ"
+                android:textColor="#676767"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#A6A6A6" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Khi chủ nhà xác nhận lịch hẹn của bạn, bạn và chủ nhà có thể chủ động liên lạc để hẹn lại giờ nếu thay đổi."
+            android:textColor="@color/black"
+            android:textSize="13sp"/>
+        <Button
+            android:id="@+id/btnDatLich"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Đặt lịch xem phòng"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#4CAF50" />
+    </LinearLayout>
+</LinearLayout>

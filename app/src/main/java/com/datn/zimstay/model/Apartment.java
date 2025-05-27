@@ -17,6 +17,7 @@ public class Apartment {
     private List<Image> images;
     private List<Amenity> amenities;
 
+
     // Getter, Setter (có thể dùng Alt+Insert trong Android Studio để generate)
     public List<Image> getImages() { return images; }
     public void setImages(List<Image> images) { this.images = images; }

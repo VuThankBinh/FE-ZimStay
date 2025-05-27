@@ -45,7 +45,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return new ConversationViewHolder(view);
     }
 
-
+    String apartmentsId;
     @Override
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
         String avatar2[]={""};
@@ -75,6 +75,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                                 .load(ApiConfig.Base_url+"uploads/images/"+userResponse.getData().getAvatar())
                                 .placeholder(R.drawable.user_1)
                                 .into(holder.imgAvatar);
+
                     }
                 }
 
@@ -101,6 +102,13 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 intent.putExtra("other_user_id", otherUserId);
                 intent.putExtra("userName", holder.textUsername.getText().toString());
                 intent.putExtra("avatar", avatar2[0]);
+                List<Integer> ids = conversation.getApartmentIds();
+                int[] idArray = new int[ids.size()];
+                for (int i = 0; i < ids.size(); i++) {
+                    idArray[i] = ids.get(i);
+                }
+                System.out.println(apartmentsId);
+                intent.putExtra("apartmentIds", idArray);
                 context.startActivity(intent);
             }
         });

@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.datn.zimstay.api.ApiConfig;
 import com.datn.zimstay.api.ApiService;
 import com.datn.zimstay.api.RetrofitClient;
@@ -23,6 +24,7 @@ import com.datn.zimstay.api.models.ApartmentResponse;
 import com.datn.zimstay.api.models.ConversationResponse;
 import com.datn.zimstay.api.models.ImageItem;
 import com.datn.zimstay.adapter.ImageSliderAdapter;
+import com.datn.zimstay.api.models.TokenCheckResponse;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -77,6 +79,18 @@ public class roomDetailActivity extends AppCompatActivity {
                 createConversation();
             }
         });
+        Button btnDatLich=findViewById(R.id.btnBook);
+        btnDatLich.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(roomDetailActivity.this, DatLichActivity.class);
+                intent.putExtra("apartment_id", id);
+                intent.putExtra("ownerId", ownerId);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+            }
+        });
+
 
     }
     private void createConversation() {
@@ -92,10 +106,49 @@ public class roomDetailActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ConversationResponse> call, Response<ConversationResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
+                            ConversationResponse conversationResponse = response.body();
+                            int conversationId = conversationResponse.getId();
                             Intent intent = new Intent(roomDetailActivity.this, ChatActivity.class);
                             intent.putExtra("apartment_id", id);
-                            intent.putExtra("ownerId", ownerId);
-                            startActivity(intent);
+                            intent.putExtra("ownerId", userId);
+                            intent.putExtra("conversation_id", conversationId);
+                            intent.putExtra("other_user_id", ownerId);
+                            List<Integer> ids = conversationResponse.getApartmentIds();
+                            int[] idArray = new int[ids.size()];
+                            for (int i = 0; i < ids.size(); i++) {
+                                idArray[i] = ids.get(i);
+                            }
+                            intent.putExtra("apartmentIds", idArray);
+                            String[] userName=new String[1];
+                            String[] imageUrl=new String[1];
+                            RetrofitClient.getInstance().getApi().getUserById(ownerId)
+                                    .enqueue(new Callback<TokenCheckResponse>() {
+                                        @Override
+                                        public void onResponse(Call<TokenCheckResponse> call, Response<TokenCheckResponse> response) {
+
+                                            Gson gson = new Gson();
+                                            System.out.println("userResponse: "+gson.toJson(response.body()));
+                                            if (response.isSuccessful() && response.body() != null) {
+                                                TokenCheckResponse userResponse = response.body();
+                                                // Hiển thị tên người dùng
+                                               userName[0]= userResponse.getData().getUserName();
+                                                imageUrl[0]=ApiConfig.Base_url+"uploads/images/"+userResponse.getData().getAvatar();
+                                                System.out.println("userName: "+userName[0]);
+                                                System.out.println("imageUrl: "+imageUrl[0]);
+
+                                                intent.putExtra("userName", userName[0]);
+                                                intent.putExtra("avatar", imageUrl[0]);
+                                                startActivity(intent);
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<TokenCheckResponse> call, Throwable t) {
+                                            t.printStackTrace();
+                                        }
+                                    });
+
                         } else {
                             Toast.makeText(roomDetailActivity.this, "Lỗi khi tạo cuộc hội thoại", Toast.LENGTH_SHORT).show();
                         }

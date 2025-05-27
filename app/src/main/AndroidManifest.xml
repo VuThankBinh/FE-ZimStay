@@ -27,12 +27,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZimStay"
         tools:targetApi="31">
+
+                <activity
+            android:name=".SearchByMapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DatLichThanhCongActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DatLichActivity"
+            android:exported="false" />
         <activity
             android:name=".ChatActivity"
             android:exported="false" />
-         <activity
-         android:name=".roomDetailActivity"
-         android:exported="false" />
+        <activity
+            android:name=".roomDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".notificationActivity"
             android:exported="false" />

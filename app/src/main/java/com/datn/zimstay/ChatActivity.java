@@ -1,5 +1,6 @@
 package com.datn.zimstay;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -15,9 +16,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.datn.zimstay.adapter.ApartmentAdapter;
+import com.datn.zimstay.adapter.ApartmentAdapter2;
 import com.datn.zimstay.adapter.ChatAdapter;
+import com.datn.zimstay.adapter.ImageSliderAdapter;
 import com.datn.zimstay.api.ApiConfig;
+import com.datn.zimstay.api.ApiService;
 import com.datn.zimstay.api.RetrofitClient;
+import com.datn.zimstay.api.models.Amenity;
+import com.datn.zimstay.api.models.ApartmentData;
+import com.datn.zimstay.api.models.ApartmentResponse;
+import com.datn.zimstay.api.models.ImageItem;
 import com.datn.zimstay.api.models.MessageRequest;
 import com.datn.zimstay.api.models.MessageResponse;
 import com.datn.zimstay.utils.EncryptionUtils;
@@ -25,7 +34,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,6 +53,8 @@ public class ChatActivity extends AppCompatActivity {
     private int otherUserId;
     private String otherUserName;
 
+    private int[] apartmentsId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +69,11 @@ public class ChatActivity extends AppCompatActivity {
         otherUserId = getIntent().getIntExtra("other_user_id", -1);
         otherUserName = getIntent().getStringExtra("userName");
         String avatar = getIntent().getStringExtra("avatar");
+        apartmentsId = getIntent().getIntArrayExtra("apartmentIds");
+        System.out.println("apartmentIds: " + apartmentsId.length);
+        setupRecyclerView();
+        getRooms(apartmentsId);
+
         System.out.println("avatar: " + avatar);
 
         ImageView img_user_avatar = findViewById(R.id.img_user_avatar);
@@ -103,6 +121,54 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private List<ApartmentData> apartmentDataList = new ArrayList<>();
+    private ApartmentAdapter2 apartmentAdapter;
+
+    private void getRooms(int[] apartmentsId) {
+        apartmentDataList.clear();
+
+        ApiService apiService = RetrofitClient.getInstance().getApi();
+
+        for (int id : apartmentsId) {
+            Call<ApartmentResponse> call = apiService.getApartmentById(id);
+            call.enqueue(new Callback<ApartmentResponse>() {
+                @Override
+                public void onResponse(Call<ApartmentResponse> call, Response<ApartmentResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApartmentData data = response.body().getData();
+                        apartmentDataList.add(data);
+                        apartmentAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(ChatActivity.this, "Lỗi khi lấy dữ liệu cho id: " + id, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApartmentResponse> call, Throwable t) {
+                    Toast.makeText(ChatActivity.this, "Không thể kết nối tới server cho id: " + id, Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+    }
+
+    // Trong onCreate() hoặc nơi nào đó bạn setup RecyclerView:
+    private void setupRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.recycler_rooms);
+        apartmentAdapter = new ApartmentAdapter2(this, apartmentDataList, new ApartmentAdapter2.OnApartmentClickListener2() {
+            @Override
+            public void onApartmentClick2(int apartmentId) {
+                Intent intent = new Intent(ChatActivity.this, roomDetailActivity.class);
+                intent.putExtra("apartment_id", apartmentId);
+                startActivity(intent);
+            }
+        });
+        LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setAdapter(apartmentAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void loadMessages() {
