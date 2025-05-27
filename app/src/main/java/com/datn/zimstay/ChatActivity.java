@@ -30,12 +30,16 @@ import com.datn.zimstay.api.models.ImageItem;
 import com.datn.zimstay.api.models.MessageRequest;
 import com.datn.zimstay.api.models.MessageResponse;
 import com.datn.zimstay.utils.EncryptionUtils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -54,6 +58,9 @@ public class ChatActivity extends AppCompatActivity {
     private String otherUserName;
 
     private int[] apartmentsId;
+
+    private FirebaseFirestore db;
+    private ListenerRegistration messageListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,12 @@ public class ChatActivity extends AppCompatActivity {
 
         // Load tin nhắn
         loadMessages();
+
+        // Khởi tạo Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Thiết lập listener cho tin nhắn mới
+        setupMessageListener();
 
         // Xử lý sự kiện gửi tin nhắn
         btnSend.setOnClickListener(new View.OnClickListener() {
@@ -178,10 +191,6 @@ public class ChatActivity extends AppCompatActivity {
                 .enqueue(new Callback<List<MessageResponse>>() {
                     @Override
                     public void onResponse(Call<List<MessageResponse>> call, Response<List<MessageResponse>> response) {
-                        Gson gson = new GsonBuilder()
-                                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS")
-                                .create();
-                        System.out.println("messageResponse: " + gson.toJson(response.body()));
                         if (response.isSuccessful() && response.body() != null) {
                             messageList.clear();
                             messageList.addAll(response.body());
@@ -198,6 +207,32 @@ public class ChatActivity extends AppCompatActivity {
                 });
     }
 
+    private void setupMessageListener() {
+        // Lắng nghe thay đổi của messages trong conversation cụ thể
+        messageListener = db.collection("conversations")
+            .document(String.valueOf(conversationId))
+            .collection("messages")
+            .addSnapshotListener((snapshots, error) -> {
+                if (error != null) {
+                    return;
+                }
+                
+                if (snapshots != null) {
+                    // Có thay đổi trong messages, load lại tin nhắn
+                    loadMessages();
+                }
+            });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Hủy listener khi activity bị hủy
+        if (messageListener != null) {
+            messageListener.remove();
+        }
+    }
+
     private void sendMessage(String message) {
         // Mã hóa tin nhắn trước khi gửi
         String encryptedMessage = EncryptionUtils.encrypt(message);
@@ -208,29 +243,40 @@ public class ChatActivity extends AppCompatActivity {
             otherUserId,
             encryptedMessage
         );
-        Call<MessageResponse> call = RetrofitClient.getInstance().getApi().sendMessage(messageRequest);
-        System.out.println(call.request().url());
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(messageRequest));
+
+        // Gọi API gửi tin nhắn
         RetrofitClient.getInstance().getApi().sendMessage(messageRequest)
             .enqueue(new Callback<MessageResponse>() {
                 @Override
                 public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        messageList.add(response.body());
+                        MessageResponse messageResponse = response.body();
+                        
+                        // Lưu vào Firestore
+                        Map<String, Object> messageData = new HashMap<>();
+                        messageData.put("message", messageResponse.getMessage());
+                        messageData.put("senderId", messageResponse.getSenderId());
+                        messageData.put("receiverId", otherUserId);
+                        messageData.put("createdAt", FieldValue.serverTimestamp());
+                        
+                        // Lưu message
+                        db.collection("conversations")
+                            .document(String.valueOf(conversationId))
+                            .collection("messages")
+                            .document(String.valueOf(System.currentTimeMillis()))
+                            .set(messageData);
+                            
+                        messageList.add(messageResponse);
                         chatAdapter.notifyItemInserted(messageList.size() - 1);
                         recyclerChat.scrollToPosition(messageList.size() - 1);
                     } else {
                         Toast.makeText(ChatActivity.this, "Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
-                        Gson gson = new Gson();
-                        System.out.println(gson.toJson(response.body()));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MessageResponse> call, Throwable t) {
                     Toast.makeText(ChatActivity.this, "Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
-                    System.out.println("error: "+ t);
                 }
             });
     }
