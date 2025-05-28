@@ -19,6 +19,7 @@ import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
 import com.datn.zimstay.api.models.MessageRequest;
 import com.datn.zimstay.api.models.MessageResponse;
+import com.datn.zimstay.api.models.NotificationResponse;
 import com.datn.zimstay.api.models.OtpRequest;
 import com.datn.zimstay.api.models.OtpResponse;
 import com.datn.zimstay.api.models.RegisterRequest;
@@ -28,10 +29,12 @@ import com.datn.zimstay.api.models.ResetPasswordResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
 import com.datn.zimstay.api.models.VerifyOtpRequest;
 import com.datn.zimstay.api.models.UpdateProfileRequest;
+import com.datn.zimstay.api.models.checkAppointmentsResponse;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import retrofit2.http.Path;
@@ -116,4 +119,18 @@ public interface ApiService {
             @Query("userId") int userId);
     @POST("api/messages")
     Call<MessageResponse> sendMessage(@Body MessageRequest messageRequest);
+
+    @PUT("api/users/{userId}/update-fcm")
+    Call<Void> updateFCMToken(
+            @Path("userId") int userId,
+            @Body Map<String, String> requestBody
+    );
+    @GET("api/appointments/check-pending")
+    Call<checkAppointmentsResponse> checkAppointments(@Query("userId") int userId, @Query("apartmentId") int apartmentId);
+
+    @GET("api/notifications/user/{userId}")
+    Call<List<NotificationResponse>> getNotificationsByUserId(@Path("userId") int userId);
+
+    @PUT("api/notifications/{id}/read")
+    Call<Void> markNotificationAsRead(@Path("id") int id);
 }

@@ -144,6 +144,6 @@
             android:layout_height="50dp"
             android:text="Đóng"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#AEAEAE" />
+            android:backgroundTint="#4CAF50" />
     </LinearLayout>
 </LinearLayout>

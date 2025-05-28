@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -29,7 +30,7 @@ import retrofit2.Response;
 
 public class messageActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView, bottomNavigationView2;
     private RecyclerView recyclerConversations;
     private ConversationAdapter conversationAdapter;
     private List<ConversationResponse> conversationList = new ArrayList<>();
@@ -46,9 +47,20 @@ public class messageActivity extends AppCompatActivity {
         // Lấy ID người dùng hiện tại từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("ZimStayPrefs", MODE_PRIVATE);
         currentUserId = sharedPreferences.getInt("nguoi_dung_id", 0);
+        int accountType = sharedPreferences.getInt("account_type", 1);
 
         bottomNavigationView = findViewById(R.id.navView);
         bottomNavigationView.setSelectedItemId(R.id.nav_message);
+        bottomNavigationView2 = findViewById(R.id.navView2);
+        bottomNavigationView2.setSelectedItemId(R.id.nav_message);
+        if(accountType==1){
+            bottomNavigationView2.setVisibility(View.GONE);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        }
+        else{
+            bottomNavigationView2.setVisibility(View.VISIBLE);
+            bottomNavigationView.setVisibility(View.GONE);
+        }
 
         recyclerConversations = findViewById(R.id.recycler_conversations);
         conversationAdapter = new ConversationAdapter(this, conversationList, currentUserId);
@@ -68,6 +80,37 @@ public class messageActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_search) {
                     Intent intent = new Intent(messageActivity.this, searchActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+
+                } else if (itemId == R.id.nav_notification) {
+                    Intent intent = new Intent(messageActivity.this, notificationActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    Intent intent = new Intent(messageActivity.this, profileActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                }
+                return false;
+            }
+        });
+        bottomNavigationView2.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_bang_tin) {
+                    Intent intent = new Intent(messageActivity.this, NewFeedActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_message) {
+                    return true;
+                } else if (itemId == R.id.nav_qlpt) {
+                    Intent intent = new Intent(messageActivity.this, ApartmentsActivity.class);
                     startActivity(intent);
                     finish();
                     return true;

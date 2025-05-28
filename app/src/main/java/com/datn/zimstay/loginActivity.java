@@ -17,11 +17,15 @@ import com.datn.zimstay.api.models.LoginResponse;
 import com.datn.zimstay.api.models.OtpRequest;
 import com.datn.zimstay.api.models.OtpResponse;
 import com.datn.zimstay.api.models.TokenCheckResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class loginActivity extends AppCompatActivity {
     private static final String TAG = "loginActivity";
@@ -55,7 +59,17 @@ public class loginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Lỗi lấy FCM token", task.getException());
+                        return;
+                    }
 
+                    String token = task.getResult();
+                    Log.d("FCM", "Token thiết bị: " + token);
+                    // Có thể gửi token lên server tại đây
+                });
         checkTokenExpiration();
         // Xử lý sự kiện click nút đăng nhập
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -182,10 +196,53 @@ public class loginActivity extends AppCompatActivity {
             editor.putString(KEY_USER_EMAIL, data.getEmail());
             editor.putString(KEY_USER_AVATAR, data.getAvatar());
             editor.putInt(KEY_ACCOUNT_TYPE, data.getTypeOfAccount());
+            
+            
+
+            // Lấy và cập nhật FCM token
+            FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Lỗi lấy FCM token", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    editor.putString("fcmToken", token);
+                    // Cập nhật FCM token lên server
+                    updateFCMToken( token);
+                });
+                
         }
-        
         editor.apply();
     }
+
+    private void updateFCMToken( String fcmToken) {
+        // Tạo request body
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("fcmToken", fcmToken);
+
+        // Gọi API cập nhật FCM token
+        RetrofitClient.getInstance()
+            .getApi()
+            .updateFCMToken(sharedPreferences.getInt("nguoi_dung_id", 0), requestBody)
+            .enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Log.d("FCM", "Cập nhật FCM token thành công");
+                    } else {
+                        Log.e("FCM", "Lỗi cập nhật FCM token: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e("FCM", "Lỗi kết nối khi cập nhật FCM token", t);
+                }
+            });
+    }
+
     private void checkTokenExpiration() {
         String token = sharedPreferences.getString(KEY_TOKEN, null);
         System.out.println("token: " +token);
@@ -204,9 +261,30 @@ public class loginActivity extends AppCompatActivity {
                                 editor.putInt("nguoi_dung_id", tokenCheckResponse.getData().getIdUser()).apply();
                                 System.out.println("nguoi_dung_id: "+sharedPreferences.getInt("nguoi_dung_id",0));
                                 Toast.makeText(loginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(loginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
+                                int account_type= tokenCheckResponse.getData().getTypeOfAccount();
+                                 // Lấy và cập nhật FCM token
+            FirebaseMessaging.getInstance().getToken()
+            .addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Log.w("FCM", "Lỗi lấy FCM token", task.getException());
+                    return;
+                }
+
+                String token = task.getResult();
+                editor.putString("fcmToken", token);
+                // Cập nhật FCM token lên server
+                                    updateFCMToken(token);
+                                });
+                                if(account_type==1){
+                                    Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                                else{
+                                    Intent intent = new Intent(loginActivity.this, NewFeedActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
                                 // Sửa tại đây
                                 if (!"OK".equalsIgnoreCase(tokenCheckResponse.getStatus())) {
                                     Toast.makeText(loginActivity.this, "Phiên đăng nhập đã hết hạn", Toast.LENGTH_SHORT).show();

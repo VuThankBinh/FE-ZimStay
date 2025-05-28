@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_bang_tin"
+        android:icon="@drawable/category"
+        android:title="Bảng tin"
+        android:contentDescription="Bảng tin"
+        android:theme="@style/BottomNavigationItemStyle" />
+    <item
+        android:id="@+id/nav_message"
+        android:icon="@drawable/message_1"
+        android:title="Tin nhắn"
+        android:contentDescription="Tin nhắn"
+        android:theme="@style/BottomNavigationItemStyle" />
+    <item
+        android:id="@+id/nav_qlpt"
+        android:icon="@drawable/apartment"
+        android:title="Phòng trọ"
+        android:contentDescription="Phòng trọ"
+        android:theme="@style/BottomNavigationItemStyle" />
+
+
+    <item
+        android:id="@+id/nav_notification"
+        android:icon="@drawable/notifacation_1"
+        android:title="Thông báo"
+        android:contentDescription="Thông báo"
+        android:theme="@style/BottomNavigationItemStyle" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/user_1"
+        android:title="Cá nhân"
+        android:contentDescription="Cá nhân"
+        android:theme="@style/BottomNavigationItemStyle" />
+</menu>

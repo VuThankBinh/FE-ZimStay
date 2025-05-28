@@ -68,7 +68,7 @@ public class profileActivity extends AppCompatActivity {
     private TextView pass;
     private Button btnEdit;
 
-    private BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView, bottomNavigationView2;
     private Uri selectedImageUri;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
@@ -86,9 +86,21 @@ public class profileActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        sharedPreferences = getSharedPreferences("ZimStayPrefs", MODE_PRIVATE);
+        int accountType = sharedPreferences.getInt("account_type", 1);
+        bottomNavigationView2 = findViewById(R.id.navView2);
         bottomNavigationView = findViewById(R.id.navView);
+        if(accountType==1){
+            bottomNavigationView2.setVisibility(View.GONE);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        }
+        else{
+            bottomNavigationView2.setVisibility(View.VISIBLE);
+            bottomNavigationView.setVisibility(View.GONE);
+        }
         // Thiết lập item được chọn là Practice
         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
+        bottomNavigationView2.setSelectedItemId(R.id.nav_profile);
 
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -116,6 +128,38 @@ public class profileActivity extends AppCompatActivity {
                 return false;
             }
         });
+        bottomNavigationView2.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_bang_tin) {
+                    Intent intent = new Intent(profileActivity.this, NewFeedActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_message) {
+                    Intent intent = new Intent(profileActivity.this, messageActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_qlpt) {
+                    Intent intent = new Intent(profileActivity.this, ApartmentsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+
+                } else if (itemId == R.id.nav_notification) {
+                    Intent intent = new Intent(profileActivity.this, notificationActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_profile) {
+                    return true;
+                }
+                return false;
+            }
+        });
+
         initializeViews();
         setupImagePickers();
         getUser();

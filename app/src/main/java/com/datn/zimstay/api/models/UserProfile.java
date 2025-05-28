@@ -27,6 +27,9 @@ public class UserProfile {
     @SerializedName("idCardNumber")
     private String idCardNumber;
 
+    @SerializedName("fcm")
+    private String fcm;
+
     public String getEmail() {
         return email;
     }
