@@ -208,6 +208,7 @@ public class searchActivity extends AppCompatActivity {
                         amenitiesArray.add(id);
                     }
                     body.add("amenityIds", amenitiesArray);
+                    body.addProperty("status","AVAILABLE");
 
                     System.out.println("body: " + body); // debug log
 

@@ -86,6 +86,9 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.10")
     implementation (platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation ("com.google.firebase:firebase-firestore")
+    implementation("org.locationtech.jts:jts-core:1.18.1")
+
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
 
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

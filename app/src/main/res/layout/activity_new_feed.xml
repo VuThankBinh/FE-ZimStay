@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f2"
+    tools:context=".NewFeedActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="70dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Banner -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/banner_zimstay_chinh" />
+
+            <!-- Tạo bài đăng mới -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/botron_img"
+                android:layout_marginTop="-40dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="10dp">
+
+                <Button
+                    android:id="@+id/btnCreatePost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tạo bài đăng mới"
+                    android:textAllCaps="false"
+                    android:layout_margin="10dp"
+                    android:backgroundTint="#2196F3"
+                    android:textColor="@android:color/white"
+                    android:drawableLeft="@drawable/sharp_add_black_36" />
+            </LinearLayout>
+
+            <!-- Nâng cấp tài khoản -->
+            <Button
+                android:id="@+id/btnUpgradeAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nâng cấp tài khoản"
+                android:textAllCaps="false"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="#8BC34A"
+                android:textColor="@android:color/white" />
+
+            <!-- Hiển thị số lượng bài đăng / tối đa -->
+
+            <TextView
+                android:id="@+id/txtPostLimitStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đã đăng 3/5 bài trong tháng"
+                android:textSize="14sp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/acclevel"
+                android:textSize="14sp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginBottom="10dp"
+                android:text="Bạn muốn đăng được nhiều bài hơn hãy nâng cấp tài khoản">
+            </TextView>
+
+            <!-- Nếu vượt giới hạn, sẽ hiện dòng này -->
+            <TextView
+                android:id="@+id/txtUpgradeSuggestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bạn đã đạt giới hạn đăng bài. Hãy nâng cấp để có thể đăng tiếp."
+                android:textSize="13sp"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_marginHorizontal="12dp"
+                android:visibility="gone" />
+
+            <!-- Tiêu đề danh sách -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/ic_trangchu5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Danh sách bài đăng mới"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginStart="10dp" />
+            </LinearLayout>
+
+            <!-- Danh sách bài đăng -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewPosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="20dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_nav_shape"
+        android:elevation="10dp"
+        app:menu="@menu/bottom_nav_chu_tro_menu"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        android:theme="@style/BottomNavigationStyle" />
+
+</com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>

@@ -40,6 +40,9 @@ import okhttp3.MultipartBody;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import com.datn.zimstay.model.Apartment;
+import com.datn.zimstay.model.Appointment;
+
 public interface ApiService {
     @POST("api/users/login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
@@ -87,7 +90,7 @@ public interface ApiService {
     Call<ArrayList<GetTinhResponse>> getQuanHuyen(@Path("id_tinh") String id);
 
     @GET("/api/dia-chi/tinh/{idTinh}/huyen/{idHuyen}/xa")
-    Call<ArrayList<GetTinhResponse>> getXa(@Path("idTinh") int idTinh, @Path("idHuyen") int idHuyen);
+    Call<ArrayList<GetTinhResponse>> getXa(@Path("idTinh") String idTinh, @Path("idHuyen") String idHuyen);
 
     @POST("api/apartments/search")
     Call<ApartmentsResponse>searchApartments(@Body JsonObject body);
@@ -133,4 +136,13 @@ public interface ApiService {
 
     @PUT("api/notifications/{id}/read")
     Call<Void> markNotificationAsRead(@Path("id") int id);
+
+    @GET("api/apartments/owner/{ownerId}")
+    Call<ApartmentsResponse> getApartmentsByOwner(@Path("ownerId") int ownerId);
+
+    @GET("api/appointments/owner/{ownerId}")
+    Call<List<Appointment>> getAppointmentsByOwner(@Path("ownerId") int ownerId);
+
+    @PUT("/api/appointments/{appointmentId}/status")
+    Call<Appointment>updateStatusAppointment(@Path("appointmentId") int appointmentId, @Query("status") String status);
 }

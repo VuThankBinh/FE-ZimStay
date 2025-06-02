@@ -1,7 +1,11 @@
 package com.datn.zimstay;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +31,14 @@ import com.datn.zimstay.adapter.ImageSliderAdapter;
 import com.datn.zimstay.api.models.TokenCheckResponse;
 import com.google.gson.Gson;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKBReader;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +62,7 @@ public class roomDetailActivity extends AppCompatActivity {
     private LinearLayout layoutAmenities;
     private ImageView back;
     SharedPreferences sharedPreferences;
+    private LinearLayout goMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +77,13 @@ public class roomDetailActivity extends AppCompatActivity {
         initializeViews();
         Intent intent = getIntent();
         id = intent.getIntExtra("apartment_id", -1);
+        goMap=findViewById(R.id.goMap);
+        goMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openLocationOnMap();
+            }
+        });
         fetchRoomDetail();
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +192,80 @@ public class roomDetailActivity extends AppCompatActivity {
         layoutAmenities = findViewById(R.id.layoutAmenities);
         back = findViewById(R.id.back);
     }
+    private String locationHex="";
+    private String diaChi="";
+    public static double[] decodeLocation(String hex) {
+        try {
+            byte[] wkb = hexStringToByteArray(hex);
+            WKBReader reader = new WKBReader();
+            Geometry geometry = reader.read(wkb);
+
+            double latitude = geometry.getCoordinate().y;
+            double longitude = geometry.getCoordinate().x;
+            return new double[]{latitude, longitude};
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte)
+                    ((Character.digit(s.charAt(i), 16) << 4)
+                            + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
+    }
+    public static double[] getLatLngFromAddress(Context context, String address) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(address, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address location = addresses.get(0);
+                return new double[]{location.getLatitude(), location.getLongitude()};
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null; // hoặc trả mảng rỗng nếu thất bại
+    }
+    private void openLocationOnMap(){
+        try {
+            // Chuyển hex string thành mảng byte
+            double[] bytes = decodeLocation(locationHex);
+            double[] getbyAd= getLatLngFromAddress(roomDetailActivity.this, diaChi);
+            System.out.println("locationHex: "+ locationHex);
+
+
+            // Bỏ qua 5 byte đầu (SRID + endianness), giải mã longitude và latitude
+           double lon = getbyAd[1]; // longitude
+            double lat = getbyAd[0]; // latitude
+            System.out.println("lon: "+lon);
+            System.out.println("lan: "+lat);
+
+            // Tạo intent mở Google Maps
+            Uri gmmIntentUri = Uri.parse("geo:" + lat + "," + lon + "?q=" + lat + "," + lon);
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            if (mapIntent.resolveActivity(roomDetailActivity.this.getPackageManager()) != null) {
+                roomDetailActivity.this.startActivity(mapIntent);
+
+            } else {
+                // Nếu không có Google Maps, dùng browser
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://maps.google.com/?q=" + lat + "," + lon));
+                System.out.println("map uri: "+ "https://maps.google.com/?q=" + lat + "," + lon);
+                roomDetailActivity.this.startActivity(browserIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Xử lý lỗi nếu không decode được
+        }
+    }
     private void fetchRoomDetail() {
         ApiService apiService = RetrofitClient.getInstance().getApi();
         Call<ApartmentResponse> call = apiService.getApartmentById(id);
@@ -185,6 +278,7 @@ public class roomDetailActivity extends AppCompatActivity {
                     Gson gson=new Gson();
                     System.out.println("data: "+gson.toJson(data));
                     ownerId= data.getOwnerId();
+                    locationHex=data.getLocation();
                     // Cập nhật UI với dữ liệu nhận được
                     tvStatus.setText(data.getStatus());
                     tvAddress.setText(data.getAddress());
@@ -193,7 +287,7 @@ public class roomDetailActivity extends AppCompatActivity {
                     tvDeposit.setText(String.format("%,dđ", data.getHouseDeposit()).replace(",", "."));
                     tvCost.setText(String.format("%,dđ/tháng", data.getCost()).replace(",", "."));
 //                    tvDetailInfo.setText(data.getDetailInfo());
-
+                    diaChi=data.getAddress() +", "+ data.getWard() +", "+data.getDistrict()+", "+data.getCity();
                     // Load ảnh vào ViewPager2
                     List<ImageItem> imageItems = data.getImages();
                     String[] imageUrls = new String[imageItems.size()];
