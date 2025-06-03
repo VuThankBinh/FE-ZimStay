@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -31,6 +34,8 @@ public class AppointmentFragment extends Fragment {
     private AppointmentAdapter adapter;
     private List<Appointment> appointmentList;
     private int currentUserId;
+    private Spinner spinnerStatus;
+    private List<Appointment> allAppointments = new ArrayList<>(); // Lưu toàn bộ lịch hẹn
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,12 +48,36 @@ public class AppointmentFragment extends Fragment {
         Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_appointment, container, false);
         
+        spinnerStatus = view.findViewById(R.id.spinnerStatus);
         rvAppointments = view.findViewById(R.id.rvAppointments);
         appointmentList = new ArrayList<>();
-        adapter = new AppointmentAdapter(getContext(), appointmentList);
+        adapter = new AppointmentAdapter(getContext(), appointmentList, new AppointmentAdapter.OnAppointmentChangedListener() {
+            @Override
+            public void onAppointmentChanged() {
+                loadAppointments();
+            }
+        });
         
         rvAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAppointments.setAdapter(adapter);
+
+        // Thiết lập spinner
+        String[] statusArr = {"Chưa xác nhận", "Đã xác nhận", "Đã hủy"};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, statusArr);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerStatus.setAdapter(spinnerAdapter);
+
+        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String status = "PENDING";
+                if (position == 1) status = "CONFIRMED";
+                else if (position == 2) status = "REJECTED";
+                filterAppointments(status);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         // Lấy userId từ SharedPreferences
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("ZimStayPrefs", 0);
@@ -70,10 +99,14 @@ public class AppointmentFragment extends Fragment {
                     @Override
                     public void onResponse(Call<List<Appointment>> call, Response<List<Appointment>> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            Log.d(TAG, "Response size: " + response.body().size());
-                            appointmentList.clear();
-                            appointmentList.addAll(response.body());
-                            adapter.notifyDataSetChanged();
+                            allAppointments.clear();
+                            allAppointments.addAll(response.body());
+                            // Lọc theo trạng thái đang chọn
+                            int pos = spinnerStatus.getSelectedItemPosition();
+                            String status = "PENDING";
+                            if (pos == 1) status = "CONFIRMED";
+                            else if (pos == 2) status = "REJECTED";
+                            filterAppointments(status);
                         } else {
                             Log.e(TAG, "Error response: " + response.code());
                             Toast.makeText(getContext(), "Không thể tải danh sách lịch hẹn", Toast.LENGTH_SHORT).show();
@@ -87,5 +120,15 @@ public class AppointmentFragment extends Fragment {
                     }
                 });
     }
-    pr
+
+    private void filterAppointments(String status) {
+        appointmentList.clear();
+        for (Appointment a : allAppointments) {
+            if (a.getStatus().equalsIgnoreCase(status)) {
+                appointmentList.add(a);
+            }
+        }
+        adapter.setStatusFilter(status);
+        adapter.notifyDataSetChanged();
+    }
 } 

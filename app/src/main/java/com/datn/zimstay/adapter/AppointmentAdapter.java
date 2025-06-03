@@ -39,10 +39,17 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
     private Context context;
     private List<Appointment> appointments;
+    private OnAppointmentChangedListener listener;
+    private String statusFilter = "PENDING";
 
-    public AppointmentAdapter(Context context, List<Appointment> appointments) {
+    public interface OnAppointmentChangedListener {
+        void onAppointmentChanged();
+    }
+
+    public AppointmentAdapter(Context context, List<Appointment> appointments, OnAppointmentChangedListener listener) {
         this.context = context;
         this.appointments = appointments;
+        this.listener = listener;
     }
 
     @NonNull
@@ -70,7 +77,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         // Xử lý sự kiện click nút nếu cần
         holder.btnConfirm.setOnClickListener(v -> {
             // TODO: xử lý xác nhận lịch hẹn
-            updateAppointment(appointment.getId(), "CONFIRMED", appointment.getOwnerId(), "Lịch hẹn của bạn đã được chấp nhận",
+            updateAppointment(appointment.getRenterId(), "CONFIRMED", appointment.getOwnerId(), "Lịch hẹn của bạn đã được chấp nhận",
                     "Lịch hẹn của bạn với chủ phòng trọ"
                             +"\n"+  holder.tvAddress.getText().toString()
                             +"\n"+" Vào: "+appointment.getAppointmentTime() +" \nNgày: "+ appointment.getAppointmentDate()+"\n"+"đã được xác nhận");
@@ -78,12 +85,20 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
         holder.btnCancel.setOnClickListener(v -> {
             // TODO: xử lý hủy lịch hẹn
-            updateAppointment(appointment.getId(), "REJECTED", appointment.getOwnerId(), "Lịch hẹn của bạn đã bị hủy",
+            updateAppointment(appointment.getRenterId(), "REJECTED", appointment.getOwnerId(), "Lịch hẹn của bạn đã bị hủy",
                     "Lịch hẹn của bạn với chủ phòng trọ"
-                            +"\n"+  holder.tvAddress.getText().toString()
+                            +"\n "+  holder.tvAddress.getText().toString()
                             +"\n"+" Vào: "+appointment.getAppointmentTime() +" \nNgày: "+ appointment.getAppointmentDate()+"\n"+"đã bị hủy");
 
         });
+
+        if (!statusFilter.equalsIgnoreCase("PENDING")) {
+            holder.btnConfirm.setVisibility(View.GONE);
+            holder.btnCancel.setVisibility(View.GONE);
+        } else {
+            holder.btnConfirm.setVisibility(View.VISIBLE);
+            holder.btnCancel.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -106,6 +121,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                                 Toast.makeText(context, "Xác nhận lịch hẹn thành công", Toast.LENGTH_SHORT).show();
                             if(status.equals("REJECTED"))
                                 Toast.makeText(context, "Hủy lịch hẹn thành công", Toast.LENGTH_SHORT).show();
+                            if(listener != null) listener.onAppointmentChanged();
                         }
                         else {
                             try {
@@ -114,7 +130,8 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                                 JSONObject errorObject = new JSONObject(errorBody);
                                 String errorMessage = errorObject.optString("error", "Lỗi không xác định");
 
-                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Giờ hẹn không còn phù hợp", Toast.LENGTH_LONG).show();
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(context, "Có lỗi xảy ra khi xử lý phản hồi từ máy chủ", Toast.LENGTH_LONG).show();
@@ -221,5 +238,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                         callback.onDataLoaded("Lỗi mạng");
                     }
                 });
+    }
+
+    public void setStatusFilter(String status) {
+        this.statusFilter = status;
+        notifyDataSetChanged();
     }
 }

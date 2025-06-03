@@ -207,11 +207,12 @@
         android:elevation="4dp">
 
         <Button
+            android:visibility="gone"
             android:id="@+id/btnReport"
             android:text="Báo cáo"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:textColor="#FFFFFF"
             android:backgroundTint="#F44336" />
 
@@ -220,7 +221,7 @@
             android:text="Chat"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_marginStart="8dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="#FF9800" />
