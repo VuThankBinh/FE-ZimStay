@@ -12,6 +12,7 @@ import retrofit2.http.Part;
 
 import com.datn.zimstay.api.models.ApartmentResponse;
 import com.datn.zimstay.api.models.ApartmentsResponse;
+import com.datn.zimstay.api.models.ApiResponse;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
 import com.datn.zimstay.api.models.ConversationResponse;
 import com.datn.zimstay.api.models.GetTinhResponse;
@@ -42,6 +43,7 @@ import retrofit2.http.Query;
 
 import com.datn.zimstay.model.Apartment;
 import com.datn.zimstay.model.Appointment;
+import com.datn.zimstay.api.models.ApartmentStatusResponse;
 
 public interface ApiService {
     @POST("api/users/login")
@@ -145,4 +147,7 @@ public interface ApiService {
 
     @PUT("/api/appointments/{appointmentId}/status")
     Call<Appointment>updateStatusAppointment(@Path("appointmentId") int appointmentId, @Query("status") String status);
+
+    @PUT("api/apartments/{apartmentId}/toggle-status")
+    Call<ApartmentStatusResponse> toggleApartmentStatus(@Path("apartmentId") int apartmentId, @Header("Authorization") String token);
 }

@@ -77,7 +77,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         // Xử lý sự kiện click nút nếu cần
         holder.btnConfirm.setOnClickListener(v -> {
             // TODO: xử lý xác nhận lịch hẹn
-            updateAppointment(appointment.getRenterId(), "CONFIRMED", appointment.getOwnerId(), "Lịch hẹn của bạn đã được chấp nhận",
+            updateAppointment(appointment.getId(), "CONFIRMED", appointment.getRenterId(), "Lịch hẹn của bạn đã được chấp nhận",
                     "Lịch hẹn của bạn với chủ phòng trọ"
                             +"\n"+  holder.tvAddress.getText().toString()
                             +"\n"+" Vào: "+appointment.getAppointmentTime() +" \nNgày: "+ appointment.getAppointmentDate()+"\n"+"đã được xác nhận");
@@ -85,7 +85,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
         holder.btnCancel.setOnClickListener(v -> {
             // TODO: xử lý hủy lịch hẹn
-            updateAppointment(appointment.getRenterId(), "REJECTED", appointment.getOwnerId(), "Lịch hẹn của bạn đã bị hủy",
+            updateAppointment(appointment.getId(), "REJECTED", appointment.getRenterId(), "Lịch hẹn của bạn đã bị hủy",
                     "Lịch hẹn của bạn với chủ phòng trọ"
                             +"\n "+  holder.tvAddress.getText().toString()
                             +"\n"+" Vào: "+appointment.getAppointmentTime() +" \nNgày: "+ appointment.getAppointmentDate()+"\n"+"đã bị hủy");
@@ -106,6 +106,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         return appointments.size();
     }
     private void updateAppointment(int appointmentId, String status, int userID, String title, String body){
+        System.out.println("uri: "+ RetrofitClient
+                .getInstance()
+                .getApi()
+                .updateStatusAppointment(appointmentId, status).request().url());
         RetrofitClient
                 .getInstance()
                 .getApi()
@@ -121,17 +125,18 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                                 Toast.makeText(context, "Xác nhận lịch hẹn thành công", Toast.LENGTH_SHORT).show();
                             if(status.equals("REJECTED"))
                                 Toast.makeText(context, "Hủy lịch hẹn thành công", Toast.LENGTH_SHORT).show();
-                            if(listener != null) listener.onAppointmentChanged();
+                            
+                            // Gọi lại API lấy danh sách lịch hẹn
+                            if(listener != null) {
+                                listener.onAppointmentChanged();
+                            }
                         }
                         else {
                             try {
-                                // Parse lỗi trả về từ server (thường là JSON)
                                 String errorBody = response.errorBody().string();
                                 JSONObject errorObject = new JSONObject(errorBody);
                                 String errorMessage = errorObject.optString("error", "Lỗi không xác định");
-
                                 Toast.makeText(context, "Giờ hẹn không còn phù hợp", Toast.LENGTH_LONG).show();
-
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(context, "Có lỗi xảy ra khi xử lý phản hồi từ máy chủ", Toast.LENGTH_LONG).show();
@@ -141,10 +146,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
                     @Override
                     public void onFailure(Call<Appointment> call, Throwable t) {
-
+                        Toast.makeText(context, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private void sendNotification(int userId, String title, String body) {

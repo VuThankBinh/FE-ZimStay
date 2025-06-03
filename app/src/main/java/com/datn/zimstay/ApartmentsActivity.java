@@ -15,6 +15,7 @@ import com.datn.zimstay.adapter.ViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ApartmentsActivity extends AppCompatActivity {
     private TabLayout tabLayout;
@@ -44,6 +45,13 @@ public class ApartmentsActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager,
             (tab, position) -> tab.setText(tabTitles[position])
         ).attach();
+
+        // Setup FloatingActionButton
+        FloatingActionButton fabAddApartment = findViewById(R.id.fabAddApartment);
+        fabAddApartment.setOnClickListener(v -> {
+            Intent intent = new Intent(ApartmentsActivity.this, chuc_nang_quan_ly_tro.class);
+            startActivity(intent);
+        });
 
         // Lấy userId từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("ZimStayPrefs", MODE_PRIVATE);
