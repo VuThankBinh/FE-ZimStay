@@ -10,12 +10,14 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 
+import com.datn.zimstay.model.Listing;
 import com.datn.zimstay.api.models.ApartmentResponse;
 import com.datn.zimstay.api.models.ApartmentsResponse;
-import com.datn.zimstay.api.models.ApiResponse;
 import com.datn.zimstay.api.models.ChangePasswordRequest;
 import com.datn.zimstay.api.models.ConversationResponse;
+import com.datn.zimstay.api.models.CreateListingResponse;
 import com.datn.zimstay.api.models.GetTinhResponse;
+import com.datn.zimstay.api.models.ListingCountResponse;
 import com.datn.zimstay.api.models.LoginRequest;
 import com.datn.zimstay.api.models.LoginResponse;
 import com.datn.zimstay.api.models.MessageRequest;
@@ -31,6 +33,7 @@ import com.datn.zimstay.api.models.TokenCheckResponse;
 import com.datn.zimstay.api.models.VerifyOtpRequest;
 import com.datn.zimstay.api.models.UpdateProfileRequest;
 import com.datn.zimstay.api.models.checkAppointmentsResponse;
+import com.datn.zimstay.model.Post;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -44,6 +47,8 @@ import retrofit2.http.Query;
 import com.datn.zimstay.model.Apartment;
 import com.datn.zimstay.model.Appointment;
 import com.datn.zimstay.api.models.ApartmentStatusResponse;
+
+import org.json.JSONObject;
 
 public interface ApiService {
     @POST("api/users/login")
@@ -66,6 +71,7 @@ public interface ApiService {
 
     @GET("api/users/me")
     Call<TokenCheckResponse> checkTokenExpiration(@Header("Authorization") String token);
+
     @GET("api/users/check-token")
     Call<TokenCheckResponse> getUser(@Header("Authorization") String token);
 
@@ -95,7 +101,7 @@ public interface ApiService {
     Call<ArrayList<GetTinhResponse>> getXa(@Path("idTinh") String idTinh, @Path("idHuyen") String idHuyen);
 
     @POST("api/apartments/search")
-    Call<ApartmentsResponse>searchApartments(@Body JsonObject body);
+    Call<ApartmentsResponse> searchApartments(@Body JsonObject body);
 
     @POST("/api/conversations")
     Call<ConversationResponse> createConversation(
@@ -103,6 +109,7 @@ public interface ApiService {
             @Query("user2Id") int user2Id,
             @Query("apartmentIds") int apartmentId
     );
+
     @GET("/api/conversations/{conversationId}")
     Call<ConversationResponse> getConversation(@Path("conversationId") int conversationId);
 
@@ -122,6 +129,7 @@ public interface ApiService {
     Call<List<MessageResponse>> getMessagesByConversationId(
             @Path("conversationId") int conversationId,
             @Query("userId") int userId);
+
     @POST("api/messages")
     Call<MessageResponse> sendMessage(@Body MessageRequest messageRequest);
 
@@ -130,6 +138,7 @@ public interface ApiService {
             @Path("userId") int userId,
             @Body Map<String, String> requestBody
     );
+
     @GET("api/appointments/check-pending")
     Call<checkAppointmentsResponse> checkAppointments(@Query("userId") int userId, @Query("apartmentId") int apartmentId);
 
@@ -146,8 +155,26 @@ public interface ApiService {
     Call<List<Appointment>> getAppointmentsByOwner(@Path("ownerId") int ownerId);
 
     @PUT("/api/appointments/{appointmentId}/status")
-    Call<Appointment>updateStatusAppointment(@Path("appointmentId") int appointmentId, @Query("status") String status);
+    Call<Appointment> updateStatusAppointment(@Path("appointmentId") int appointmentId, @Query("status") String status);
 
     @PUT("api/apartments/{apartmentId}/toggle-status")
     Call<ApartmentStatusResponse> toggleApartmentStatus(@Path("apartmentId") int apartmentId, @Header("Authorization") String token);
+
+    @POST("api/listings")
+    Call<CreateListingResponse> createListing(@Body Listing listing);
+
+    @GET("/api/listings/user/{userId}/monthly-count")
+    Call<ListingCountResponse> getListingCountByUser(@Path("userId") int userId);
+
+    @GET("api/listings/user/{userId}/status/{status}")
+    Call<List<Post>> getListingsByUserAndStatus(@Path("userId") int userId, @Path("status") boolean status);
+
+    @GET("api/listings/{listingId}")
+    Call<Listing> getListingDetail(@Path("listingId") int listingId);
+
+    @GET("api/apartments/{apartmentId}")
+    Call<Apartment> getApartmentDetail(@Path("apartmentId") int apartmentId);
+
+    @PUT("api/users/{userId}/upgrade-level")
+    Call<TokenCheckResponse> upgradeUserLevel(@Path("userId") int userId);
 }

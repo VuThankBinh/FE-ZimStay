@@ -23,10 +23,10 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_stat_notification"
+        android:icon="@drawable/zimstay_logo"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@drawable/ic_stat_notification"
+        android:roundIcon="@drawable/zimstay_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZimStay"
         android:usesCleartextTraffic="true"
@@ -104,6 +104,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".UpgradeVipActivity"
+            android:exported="false" />
+        
+        <!-- ZaloPay Configuration -->
+        <activity
+            android:name="vn.zalopay.sdk.ZaloPaySDKActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            
+        <activity
+            android:name="vn.zalopay.sdk.OpenInChromeCustomTab"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+            
+        <activity
+            android:name="vn.zalopay.sdk.OpenInAppBrowser"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+            
+        <activity
+            android:name="vn.zalopay.sdk.OpenInChromeCustomTab$OpenInChromeCustomTabActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+            
+        <activity
+            android:name="vn.zalopay.sdk.OpenInAppBrowser$OpenInAppBrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
     </application>
 
 </manifest>

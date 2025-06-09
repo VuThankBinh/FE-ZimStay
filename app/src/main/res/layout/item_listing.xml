@@ -28,49 +28,40 @@
             android:id="@+id/tvDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mô tả ngắn gọn về bài đăng hoặc phòng trọ"
+            android:text="Mô tả ngắn gọn về bài đăng"
             android:textSize="14sp"
             android:textColor="#555"
             android:paddingTop="4dp"/>
 
-        <!-- Địa chỉ -->
+        <!-- Ngày đăng -->
         <TextView
-            android:id="@+id/tvAddress"
+            android:id="@+id/tvCreatedAt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="45 Trần Quang Khải, Lê Lợi, TP Hưng Yên, Hưng Yên"
-            android:textSize="14sp"
-            android:textColor="#444"
-            android:paddingTop="6dp"/>
+            android:text="Ngày đăng: 09/06/2025"
+            android:textSize="12sp"
+            android:textColor="#666"
+            android:paddingTop="4dp"/>
 
-        <!-- Giá - Diện tích - Tiền cọc -->
+        <!-- Trạng thái -->
         <TextView
-            android:id="@+id/tvPriceAreaDeposit"
-            android:layout_width="match_parent"
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Giá: 2.200.000đ - Diện tích: 28m² - Cọc: 1.000.000đ"
-            android:textSize="13sp"
-            android:textColor="#444"
-            android:paddingTop="2dp"/>
+            android:text="Chờ duyệt"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:paddingTop="4dp"
+            android:layout_marginTop="4dp"/>
 
-        <!-- Tiện ích -->
-        <TextView
-            android:id="@+id/tvAmenities"
+        <!-- Ảnh -->
+        <ImageView
+            android:id="@+id/ivApartmentImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tiện ích: Điện, Nước, Internet, Giữ xe, An ninh"
-            android:textSize="13sp"
-            android:textColor="#555"
-            android:paddingTop="2dp"/>
-
-        <!-- Danh sách ảnh ngang -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvImages"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:paddingTop="8dp"
-            android:orientation="horizontal"
-            android:scrollbars="horizontal"/>
+            android:layout_height="160dp"
+            android:background="@drawable/img_trangchu2"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="8dp"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

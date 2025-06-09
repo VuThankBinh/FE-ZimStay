@@ -111,6 +111,24 @@
                     android:layout_marginStart="10dp" />
             </LinearLayout>
 
+            <!-- TabLayout -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutPosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabIndicatorColor="@color/purple_200"
+                app:tabSelectedTextColor="@color/purple_500"
+                app:tabTextColor="@color/black"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp" />
+
+            <!-- Fragment Container -->
+            <FrameLayout
+                android:id="@+id/fragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
             <!-- Danh sách bài đăng -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewPosts"
